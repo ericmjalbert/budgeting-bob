@@ -40,6 +40,23 @@ def write_to_db(data):
     cursor.close()
 
 
+def read_from_db():
+    conn = psycopg2.connect(DATABASE_URL, sslmode="require")
+    cursor = conn.cursor()
+
+    # Get count of rows
+    cursor.execute("SELECT COUNT(*) FROM public.log_timestamp")
+    return cursor.fetchone()[0]
+
+
+def gen_website_message(date):
+    row_count = read_from_db()
+
+    msg = f"Hello, World! Today is {date}<br/>"
+    msg += f"There are currently {row_count} rows in public.log_timestamp\n"
+    return msg
+
+
 @app.route("/")
 @app.route("/index")
 def index():
@@ -47,4 +64,5 @@ def index():
     print("start write")
     write_to_db(date)
     print("finish write")
-    return f"Hello, World! Today is {date}"
+
+    return gen_website_message(date)
