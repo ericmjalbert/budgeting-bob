@@ -21,3 +21,5 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     return app
+
+my_app = create_app()
