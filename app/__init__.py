@@ -2,6 +2,7 @@ import os
 from flask import Flask
 
 from . import auth
+from . import home
 from . import time_logs
 
 
@@ -10,8 +11,9 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(SECRET_KEY="dev", DATABASE_URL=os.environ["DATABASE_URL"])
 
-    app.register_blueprint(time_logs.bp)
     app.register_blueprint(auth.bp)
+    app.register_blueprint(home.bp)
+    app.register_blueprint(time_logs.bp)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
