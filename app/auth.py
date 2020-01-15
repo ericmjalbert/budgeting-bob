@@ -89,9 +89,12 @@ def load_logged_in_user():
         g.user = None
     else:
         with Database() as db:
-            db.execute("SELECT * FROM public.user WHERE id = %s", (user_id,))
-            user = db.fetchone()["username"]
-            g.user = user
+            try:
+                db.execute("SELECT * FROM public.user WHERE id = %s", (user_id,))
+                user = db.fetchone()["username"]
+                g.user = user
+            except TypeError:
+                g.user = None
 
 
 def login_required(view):
