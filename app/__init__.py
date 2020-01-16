@@ -4,6 +4,7 @@ from flask import Flask
 from . import auth
 from . import home
 from . import time_logs
+from . import transactions
 
 
 def create_app(test_config=None):
@@ -14,6 +15,7 @@ def create_app(test_config=None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(home.bp)
     app.register_blueprint(time_logs.bp)
+    app.register_blueprint(transactions.bp)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -23,5 +25,6 @@ def create_app(test_config=None):
         app.config.from_mapping(test_config)
 
     return app
+
 
 my_app = create_app()

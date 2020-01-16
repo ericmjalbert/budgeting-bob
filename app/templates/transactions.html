@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Transactions{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Transactions</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        This is the list of transactions in the system. Categories can be manually overridden.
+      </li>
+    </ul>
+  </div>
+</div>
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">id</th>
+      <th scope="col">created</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <th>
+        <div class="input-group">
+          <div class="input-group-text">
+            <input class="custom-control-input" type="checkbox" aria-label="Checkbox for following text input">
+          </div>
+        </div>
+      </th>
+      <td>{{ row["id"] }}</td>
+      <td>{{ row["created"] }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
+{% endblock %}
