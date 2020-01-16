@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 
-{% block header %}
-  <h1>{% block title %}Log In{% endblock %}</h1>
-{% endblock %}
+{% block title %}Log In{% endblock %}
 
 {% block content %}
-  <form method="post">
+<form method="post">
+  <div class="form-group">
     <label for="username">Username</label>
-    <input name="username" id="username" required>
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" required>
-    <input type="submit" value="Log In">
-  </form>
+    <input type="username" class="form-control" id="usernameInput" aria-describedby="usernameHelp" placeholder="Enter username">
+    <small id="usernameHelp" class="form-text text-muted">There is only one valid username.</small>
+  </div>
+  <div class="form-group">
+    <label for="passwordInput">Password</label>
+    <input type="password" class="form-control" id="passwordInput" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-primary">Log In</button>
+</form>
 {% endblock %}
