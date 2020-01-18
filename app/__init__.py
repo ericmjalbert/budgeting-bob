@@ -6,6 +6,8 @@ from . import home
 from . import time_logs
 from . import transactions
 
+from .scripts import write_timestamp_row
+
 
 def create_app(test_config=None):
     # create and configure the app
@@ -16,6 +18,8 @@ def create_app(test_config=None):
     app.register_blueprint(home.bp)
     app.register_blueprint(time_logs.bp)
     app.register_blueprint(transactions.bp)
+
+    app.cli.add_command(write_timestamp_row.write_timestamp)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
