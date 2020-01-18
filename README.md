@@ -10,8 +10,7 @@ This is a heroku web application that will store account transactions and catego
 4. [ ] See if I can have a scheduled CRON job run on the background. Something simple like adding a new row with the current timestamp
 5. [ ] See if I can get secrets (rbc password) stored on the server, use them to access the account
 6. [ ] Change CRON script to pull transcations from RBC account
-7. [ ] Setup basic Bootstrap UI framework
-7. [ ] Update UI to show summary info on transactions (monthly income/expense)
-8. [ ] Create some sort of UI to manually assign categories to transactions
-9. [ ] Change backend so that any assigned category is automatically applied to similar transactions
-10. [ ] Use some ML to auto assign categories
+7. [ ] Change backend so that any assigned category is automatically applied to similar transactions
+8. [ ] Update UI to show remaining monthly usage per budget category (report page)
+9. [ ] Update UI to allow manual Category updates/overwrites
+10. [ ] Add search and filter commands to the transactions page
