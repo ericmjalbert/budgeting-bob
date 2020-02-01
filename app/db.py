@@ -1,5 +1,6 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
+import sqlalchemy
 
 from flask import current_app
 
@@ -19,6 +20,21 @@ class Database:
     def __exit__(self, exc_type, exc_value, traceback):
         self.conn.commit()
         self.conn.close()
+
+
+# TODO try to figure out a how to combine PandasConnection and Database
+class PandasConnection:
+    def __init__(self):
+        self.engine = None
+
+    def __enter__(self):
+        self.engine = sqlalchemy.create_engine(
+            current_app.config["DATABASE_URL"]
+        )
+        return self.engine
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.engine.dispose()
 
 
 def gen_create_table_sql():
