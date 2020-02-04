@@ -17,25 +17,41 @@
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th scope="col">id</th>
-      <th scope="col">created</th>
-      <th scope="col">Action</th>
+      <th scope="col">Account Type</th>
+      <th scope="col">Account Number</th>
+      <th scope="col">Transaction Date</th>
+      <th scope="col">Value</th>
+      <th scope="col">Description</th>
+      <th scope="col">Category</th>
+      <th scope="col">Edit</th>
     </tr>
   </thead>
   <tbody>
+
     {% for row in rows %}
     <tr>
-      <th>
+      <td>{{ row["account_type"] }}</td>
+      <td>{{ row["account_number"] }}</td>
+      <td>{{ row["transaction_date"] }}</td>
+      <td>{{ row["value"] }}</td>
+      <td>{{ row["description"] }}</td>
+      <td>{{ row["category"] }}</td>
+      <td>
         <div class="input-group">
-          <div class="input-group-text">
-            <input type="checkbox" aria-label="Checkbox for following text input">
+          <select class="custom-select" id="category">
+            <option selected>{{ row["category"] }}</option>
+            {% for val in categories %}
+              <option value="{{ category }}"> {{ val["category"]|capitalize }} </option>
+            {% endfor %}
+          </select>
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button">Button</button>
           </div>
         </div>
-      </th>
-      <td>{{ row["id"] }}</td>
-      <td>{{ row["created"] }}</td>
+      </td>
     </tr>
     {% endfor %}
+
   </tbody>
 </table>
 

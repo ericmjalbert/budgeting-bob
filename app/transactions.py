@@ -12,7 +12,26 @@ bp = Blueprint("transactions", __name__)
 def transactions():
 
     with Database() as db:
-        db.execute("SELECT * FROM public.log_timestamp")
+        db.execute(
+            """
+            SELECT
+                account_type,
+                account_number,
+                transaction_date,
+                value,
+                COALESCE(description_1, '')
+                    || ' '
+                    || COALESCE(description_2, '') AS description,
+                category
+            FROM public.transactions
+            ORDER BY transaction_date
+        """
+        )
         table_rows = db.fetchall()
 
-    return render_template("transactions.html", rows=table_rows)
+        db.execute("SELECT category FROM public.categories ORDER BY category")
+        category_names = db.fetchall()
+
+    return render_template(
+        "transactions.html", rows=table_rows, categories=category_names
+    )
