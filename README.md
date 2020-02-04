@@ -9,9 +9,9 @@ This is a heroku web application that will store account transactions and catego
 3. [x] Change webpage to show table data
 4. [x] See if I can have a scheduled CRON job run on the background. Something simple like adding a new row with the current timestamp
     * Use `heroku addons:open scheduler`
-7. [ ] Change backend so that any assigned category is automatically applied to similar transactions
-8. [ ] Update UI to show remaining monthly usage per budget category (report page)
-9. [ ] Update UI to allow manual Category updates/overwrites
+7. [x] Change backend so that any assigned category is automatically applied to similar transactions
+8. [ ] Update UI to allow manual Category updates/overwrites
+9. [ ] Update UI to show remaining monthly usage per budget category (report page)
 10. [ ] Add search and filter commands to the transactions page
 
 ## Random TODOs
