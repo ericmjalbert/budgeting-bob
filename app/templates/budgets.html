@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Budgets{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Budget Report</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        This is the list of each budget category and the remaining amount of money that can be spent within this month.
+      </li>
+    </ul>
+  </div>
+</div>
+
+<table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">Category</th>
+      <th scope="col">Monthly Budget</th>
+      <th scope="col">Remaining Amount</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {% for row in rows %}
+    <tr>
+      <td>{{ row["category"] }}</td>
+      <td>{{ row["budget"] }}</td>
+      <td>{{ row["remaining"] }}</td>
+      <td>{{ row["status"] }}</td>
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+{% endblock %}

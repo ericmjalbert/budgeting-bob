@@ -2,6 +2,7 @@ import os
 from flask import Flask
 
 from . import auth
+from . import budgets
 from . import home
 from . import time_logs
 from . import transactions
@@ -16,6 +17,7 @@ def create_app(test_config=None):
     app.config.from_mapping(SECRET_KEY="dev", DATABASE_URL=os.environ["DATABASE_URL"])
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(budgets.bp)
     app.register_blueprint(home.bp)
     app.register_blueprint(time_logs.bp)
     app.register_blueprint(transactions.bp)
