@@ -43,10 +43,12 @@ def transactions():
 def save_new_category():
     row_id = request.args.get("id")
     new_category = request.args.get("category")
+    clean_category = new_category.lower().strip()
+
     with Database() as db:
         sql = f"""
             UPDATE public.transactions
-            SET category = '{new_category}'
+            SET category = '{clean_category}'
             WHERE id = '{row_id}';
         """
         db.execute(sql)

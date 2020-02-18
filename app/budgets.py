@@ -27,6 +27,7 @@ def budgets():
             INNER JOIN public.categories AS ca
                 USING (category)
             -- WHERE DATE_TRUNC('m', transaction_date) = DATE_TRUNC('m', CURRENT_DATE-60)
+            WHERE budget > 0
             GROUP BY 1, 2
         """)
         budget_rows = db.fetchall()
