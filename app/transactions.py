@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 
 from .auth import login_required
 from .db import Database
@@ -15,6 +15,7 @@ def transactions():
         db.execute(
             """
             SELECT
+                id,
                 account_type,
                 account_number,
                 transaction_date,
@@ -35,3 +36,19 @@ def transactions():
     return render_template(
         "transactions.html", rows=table_rows, categories=category_names
     )
+
+
+@bp.route("/save_new_category")
+@login_required
+def save_new_category():
+    row_id = request.args.get("id")
+    new_category = request.args.get("category")
+    with Database() as db:
+        sql = f"""
+            UPDATE public.transactions
+            SET category = '{new_category}'
+            WHERE id = '{row_id}';
+        """
+        db.execute(sql)
+
+    return "nothing"

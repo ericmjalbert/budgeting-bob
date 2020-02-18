@@ -8,8 +8,15 @@
     <!-- Bootstrap CSS -->
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Javascript Import -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script type=text/javascript src="static/js/jquery.min.js"></script>
+    <script src="static/js/popper.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+
     <title>Budgeting Bob - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    {% block header %}{% endblock %}
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -33,10 +40,5 @@
       </section>
     </div>
 
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="static/js/jquery.min.js"></script>
-    <script src="static/js/popper.min.js"></script>
-    <script src="static/js/bootstrap.min.js"></script>
   </body>
 </html>

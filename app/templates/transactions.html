@@ -2,6 +2,10 @@
 
 {% block title %}Transactions{% endblock %}
 
+{% block header %}
+<script type='text/javascript' src='static/js/transactions.js'></script>
+{% endblock %}
+
 {% block content %}
 <div class="card">
   <div class="card-body">
@@ -12,6 +16,11 @@
       </li>
     </ul>
   </div>
+</div>
+
+<div class='container'>
+  <h3>Test</h3>
+  <button id=process_input class='btn btn-primary' type="button">Test</button>
 </div>
 
 <table class="table">
@@ -30,14 +39,15 @@
 
     {% for row in rows %}
     <tr>
+      <td class="id-value" style="display:none;">{{ row["id"] }}</td>
       <td>{{ row["account_type"] }}</td>
       <td>{{ row["account_number"] }}</td>
       <td>{{ row["transaction_date"] }}</td>
       <td>{{ row["value"] }}</td>
       <td>{{ row["description"] }}</td>
-      <td>{{ row["category"] }}</td>
+      <td class="category">{{ row["category"] }}</td>
       <td>
-        <div class="input-group">
+        <div class="input-group category-save">
           <select class="custom-select" id="category">
             <option selected>{{ row["category"] }}</option>
             {% for val in categories %}
@@ -45,7 +55,7 @@
             {% endfor %}
           </select>
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">Button</button>
+            <button class="btn btn-outline-secondary save" type="button">Save</button>
           </div>
         </div>
       </td>
@@ -54,6 +64,4 @@
 
   </tbody>
 </table>
-
-
 {% endblock %}
