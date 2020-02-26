@@ -25,7 +25,7 @@ def transactions():
                     || COALESCE(description_2, '') AS description,
                 category
             FROM public.transactions
-            ORDER BY transaction_date
+            ORDER BY transaction_date DESC
         """
         )
         table_rows = db.fetchall()
