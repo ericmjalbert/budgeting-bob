@@ -12,7 +12,7 @@ bp = Blueprint("budgets", __name__)
 def budgets():
 
     with Database() as db:
-        # TODO re-add the date trunc at some point
+        # TODO Change the DATE_TRUNC to be based on a selector
         db.execute(
             """
             SELECT
@@ -26,8 +26,8 @@ def budgets():
             FROM public.transactions AS tr
             INNER JOIN public.categories AS ca
                 USING (category)
-            -- WHERE DATE_TRUNC('m', transaction_date) = DATE_TRUNC('m', CURRENT_DATE-60)
-            WHERE budget > 0
+            WHERE DATE_TRUNC('m', transaction_date) = DATE_TRUNC('m', CURRENT_DATE-30)
+                AND budget >= 0
             GROUP BY 1, 2
         """)
         budget_rows = db.fetchall()

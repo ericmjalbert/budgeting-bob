@@ -15,16 +15,18 @@ def transactions():
         db.execute(
             """
             SELECT
-                id,
-                account_type,
-                account_number,
-                transaction_date,
+                transactions.id,
+                accounts.owner || ' ' || accounts.type AS account_alias,
+                DATE(transaction_date),
                 value,
                 COALESCE(description_1, '')
                     || ' '
                     || COALESCE(description_2, '') AS description,
                 category
             FROM public.transactions
+            INNER JOIN public.accounts
+                ON accounts.type = account_type
+                AND accounts.number = account_number
             ORDER BY transaction_date DESC
         """
         )

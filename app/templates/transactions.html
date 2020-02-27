@@ -26,8 +26,7 @@
 <table class="table">
   <thead class="thead-light">
     <tr>
-      <th scope="col">Account Type</th>
-      <th scope="col">Account Number</th>
+      <th scope="col">Account Alias</th>
       <th scope="col">Transaction Date</th>
       <th scope="col">Value</th>
       <th scope="col">Description</th>
@@ -40,8 +39,7 @@
     {% for row in rows %}
     <tr>
       <td class="id-value" style="display:none;">{{ row["id"] }}</td>
-      <td>{{ row["account_type"] }}</td>
-      <td>{{ row["account_number"] }}</td>
+      <td>{{ row["account_alias"] }}</td>
       <td>{{ row["transaction_date"] }}</td>
       <td>{{ row["value"] }}</td>
       <td>{{ row["description"] }}</td>

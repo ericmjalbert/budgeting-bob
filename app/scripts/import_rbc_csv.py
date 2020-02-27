@@ -10,7 +10,7 @@ import app  # noqa # pylint: disable=unused-import
 
 def load_csv():
     # TODO get this filename from command line
-    filename = "app/scripts/csv30131.csv"
+    filename = "app/scripts/csv30374.csv"
     df = pd.read_csv(filename, index_col=False)
     return df
 
@@ -67,7 +67,10 @@ def apply_existing_categories(original_df):
     with PandasConnection() as db:
         if True or db.has_table("transactions"):
             categories = pd.read_sql(
-                "SELECT description_1, category FROM public.transactions",
+                """
+                SELECT DISTINCT description_1, category
+                FROM public.transactions WHERE category IS NOT NULL
+                """,
                 con=db.connect(),
             )
             new_df = pd.merge(
@@ -111,3 +114,28 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+### REMOVE DUPLICATES
+"""
+BEGIN;
+
+ALTER TABLE public.transactions ADD COLUMN row_number SERIAL;
+
+CREATE TABLE public.new_transactions AS
+WITH ranked AS (
+    SELECT id, account_type, account_number, transaction_date, category, value, description_1, description_2, created, updated,
+        ROW_NUMBER() OVER (PARTITION BY id ORDER BY row_number) AS rank
+    FROM public.transactions
+)
+SELECT id, account_type, account_number, transaction_date, category, value, description_1, description_2, created, updated
+FROM ranked
+WHERE rank = 1
+;
+
+ALTER TABLE public.transactions RENAME TO backup_transactions;
+ALTER TABLE public.new_transactions RENAME TO transactions;
+
+COMMIT;
+
+"""
