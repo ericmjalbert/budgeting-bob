@@ -20,13 +20,20 @@ def budgets():
                 budget,
                 budget - (-1 * SUM(value)) AS remaining,
                 CASE
-                    WHEN SUM(value) > budget THEN 'over_budget'
-                    WHEN SUM(value) < budget THEN 'under_budget'
-                    END AS status
+                    WHEN budget - (-1 * SUM(value)) < 0 THEN 'Over Budget'
+                    WHEN budget - (-1 * SUM(value)) >= 0 THEN 'Under Budget'
+                    END AS status,
+                -- need this column for bootstrap coloring
+                CASE
+                    WHEN budget - (-1 * SUM(value)) < 0 THEN 'table-warning'
+                    WHEN budget - (-1 * SUM(value)) >= 0 THEN 'table-success'
+                    END AS status_class
             FROM public.transactions AS tr
             INNER JOIN public.categories AS ca
                 USING (category)
-            WHERE DATE_TRUNC('m', transaction_date) = DATE_TRUNC('m', CURRENT_DATE-30)
+            WHERE category != 'transfer_between_accounts'
+                AND DATE_TRUNC('month', transaction_date)
+                    = DATE_TRUNC('month', CURRENT_DATE)
                 AND budget >= 0
             GROUP BY 1, 2
         """)

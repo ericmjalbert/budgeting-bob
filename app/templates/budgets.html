@@ -2,6 +2,10 @@
 
 {% block title %}Budgets{% endblock %}
 
+{% block header %}
+<script type='text/javascript' src='static/js/budgets.js'></script>
+{% endblock %}
+
 {% block content %}
 <div class="card">
   <div class="card-body">
@@ -26,8 +30,8 @@
   <tbody>
 
     {% for row in rows %}
-    <tr>
-      <td>{{ row["category"] }}</td>
+    <tr class="{{ row["status_class"] }}">
+      <td>{{ row["category"].replace("_", " ")|capitalize }}</td>
       <td>{{ row["budget"] }}</td>
       <td>{{ row["remaining"] }}</td>
       <td>{{ row["status"] }}</td>
