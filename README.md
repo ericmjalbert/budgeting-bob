@@ -28,6 +28,7 @@ This is a heroku web application that will store account transactions and catego
 [ ] Account names to transactions since numbers are not descriptive
 [x] Make a category for PENDING
 [x] Change games to be "entertainment" (for webtoons and such)
-[ ] Figure out Cindy BUG with presto
-[ ] Category names should appear captialized in the dropdown
+[x] Figure out Cindy BUG with presto
+[x] Figure out what's wrong the budget
+[x] Category names should appear captialized in the dropdown
 [ ] Get the updated column to work whenever someone "SAVES" a transaction category
