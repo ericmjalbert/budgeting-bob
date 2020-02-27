@@ -8,9 +8,7 @@ from app.db import PandasConnection
 import app  # noqa # pylint: disable=unused-import
 
 
-def load_csv():
-    # TODO get this filename from command line
-    filename = "app/scripts/csv30374.csv"
+def load_csv(filename):
     df = pd.read_csv(filename, index_col=False)
     return df
 
@@ -68,13 +66,17 @@ def apply_existing_categories(original_df):
         if True or db.has_table("transactions"):
             categories = pd.read_sql(
                 """
-                SELECT DISTINCT description_1, category
-                FROM public.transactions WHERE category IS NOT NULL
+                SELECT DISTINCT
+                    description_1,
+                    FIRST_VALUE(category)
+                        OVER (PARTITION BY description_1 ORDER BY updated) AS category
+                FROM public.transactions
+                WHERE category IS NOT NULL
                 """,
                 con=db.connect(),
             )
-            new_df = pd.merge(
-                df, categories, on="description_1", how="left", suffixes=("", "_y")
+            new_df = df.merge(
+                categories, on="description_1", how="left", suffixes=("", "_y")
             )
             new_df["category"] = new_df["category_y"]
             new_df = new_df.drop("category_y", axis=1)
@@ -96,9 +98,10 @@ def write_df_to_database(df):
 
 
 @click.command("import-rbc-csv")
+@click.argument("filename")
 @with_appcontext
-def main():
-    df = load_csv()
+def main(filename):
+    df = load_csv(filename)
 
     # Clean up columns
     df = rbc_csv_cleaner(df)
@@ -117,25 +120,25 @@ if __name__ == "__main__":
 
 
 ### REMOVE DUPLICATES
-"""
-BEGIN;
-
-ALTER TABLE public.transactions ADD COLUMN row_number SERIAL;
-
-CREATE TABLE public.new_transactions AS
-WITH ranked AS (
-    SELECT id, account_type, account_number, transaction_date, category, value, description_1, description_2, created, updated,
-        ROW_NUMBER() OVER (PARTITION BY id ORDER BY row_number) AS rank
-    FROM public.transactions
-)
-SELECT id, account_type, account_number, transaction_date, category, value, description_1, description_2, created, updated
-FROM ranked
-WHERE rank = 1
-;
-
-ALTER TABLE public.transactions RENAME TO backup_transactions;
-ALTER TABLE public.new_transactions RENAME TO transactions;
-
-COMMIT;
-
-"""
+# """
+# BEGIN;
+# 
+# ALTER TABLE public.transactions ADD COLUMN row_number SERIAL;
+# 
+# CREATE TABLE public.new_transactions AS
+# WITH ranked AS (
+#     SELECT id, account_type, account_number, transaction_date, category, value, description_1, description_2, created, updated,
+#         ROW_NUMBER() OVER (PARTITION BY id ORDER BY row_number) AS rank
+#     FROM public.transactions
+# )
+# SELECT id, account_type, account_number, transaction_date, category, value, description_1, description_2, created, updated
+# FROM ranked
+# WHERE rank = 1
+# ;
+# 
+# ALTER TABLE public.transactions RENAME TO backup_transactions;
+# ALTER TABLE public.new_transactions RENAME TO transactions;
+# 
+# COMMIT;
+# 
+# """
