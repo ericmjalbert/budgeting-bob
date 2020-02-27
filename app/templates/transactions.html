@@ -39,7 +39,7 @@
     {% for row in rows %}
     <tr>
       <td class="id-value" style="display:none;">{{ row["id"] }}</td>
-      <td>{{ row["account_alias"] }}</td>
+      <td>{{ row["account_alias"]|capitalize }}</td>
       <td>{{ row["transaction_date"] }}</td>
       <td>{{ row["value"] }}</td>
       <td>{{ row["description"] }}</td>

@@ -17,7 +17,7 @@ def transactions():
             SELECT
                 transactions.id,
                 accounts.owner || ' ' || accounts.type AS account_alias,
-                DATE(transaction_date),
+                DATE(transaction_date) AS transaction_date,
                 value,
                 COALESCE(description_1, '')
                     || ' '
