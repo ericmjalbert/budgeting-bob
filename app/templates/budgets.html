@@ -37,6 +37,7 @@
         <th scope="col">Category</th>
         <th scope="col">Monthly Budget</th>
         <th scope="col">Remaining Amount</th>
+        <th scope="col">Overall Overage</th>
         <th scope="col">Status</th>
       </tr>
     </thead>
@@ -47,6 +48,7 @@
         <td>{{ row["category"].replace("_", " ")|capitalize }}</td>
         <td>{{ row["budget"] }}</td>
         <td>{{ row["remaining"] }}</td>
+        <td>{{ row["overage"] }}</td>
         <td>{{ row["status"] }}</td>
       </tr>
       {% endfor %}

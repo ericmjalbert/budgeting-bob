@@ -18,26 +18,62 @@ def budgets():
     with Database() as db:
         db.execute(
             f"""
+            WITH cumulative_budget AS (
+                SELECT
+                    category,
+                    SUM(budget) AS budget
+                FROM public.categories
+                CROSS JOIN generate_series('2020-01-01', CURRENT_DATE, '1 month')
+                WHERE budget >= 0
+                GROUP BY 1
+            ),
+
+            cumulative_spending AS (
+                SELECT
+                    category,
+                    SUM(-1 * value) AS spend
+                FROM public.transactions
+                WHERE transaction_date > '2020-01-01'
+                    AND category != 'transfer_between_accounts'
+                GROUP BY 1
+            ),
+
+            specific_month_remaining AS (
+                SELECT
+                    category,
+                    ca.budget,
+                    ca.budget - (-1 * SUM(tr.value)) AS remaining,
+                    CASE
+                        WHEN ca.budget - (-1 * SUM(tr.value)) < 0 THEN 'Over Budget'
+                        WHEN ca.budget - (-1 * SUM(tr.value)) >= 0 THEN 'Under Budget'
+                        END AS status,
+                    -- need this column for bootstrap coloring
+                    CASE
+                        WHEN ca.budget - (-1 * SUM(tr.value)) < 0 THEN 'table-warning'
+                        WHEN ca.budget - (-1 * SUM(tr.value)) >= 0 THEN 'table-success'
+                        END AS status_class
+                FROM public.transactions AS tr
+                INNER JOIN public.categories AS ca
+                    USING (category)
+                WHERE category != 'transfer_between_accounts'
+                    AND DATE_TRUNC('month', tr.transaction_date) = '{selected_month}'
+                    AND ca.budget >= 0
+                GROUP BY 1, 2
+            )
+
             SELECT
                 category,
-                budget,
-                budget - (-1 * SUM(value)) AS remaining,
-                CASE
-                    WHEN budget - (-1 * SUM(value)) < 0 THEN 'Over Budget'
-                    WHEN budget - (-1 * SUM(value)) >= 0 THEN 'Under Budget'
-                    END AS status,
-                -- need this column for bootstrap coloring
-                CASE
-                    WHEN budget - (-1 * SUM(value)) < 0 THEN 'table-warning'
-                    WHEN budget - (-1 * SUM(value)) >= 0 THEN 'table-success'
-                    END AS status_class
-            FROM public.transactions AS tr
-            INNER JOIN public.categories AS ca
+                smr.budget,
+                ROUND(smr.remaining::NUMERIC, 2) AS remaining,
+                ROUND(cb.budget - cs.spend::NUMERIC, 2) AS overage,
+                smr.status,
+                smr.status_class
+            FROM specific_month_remaining AS smr
+            INNER JOIN cumulative_budget AS cb
                 USING (category)
-            WHERE category != 'transfer_between_accounts'
-                AND DATE_TRUNC('month', transaction_date) = '{selected_month}'
-                AND budget >= 0
-            GROUP BY 1, 2
+            INNER JOIN cumulative_spending AS cs
+                USING (category)
+            ORDER BY 1
             """
         )
         budget_rows = db.fetchall()
