@@ -14,30 +14,44 @@
       <li class="list-group-item">
         This is the list of each budget category and the remaining amount of money that can be spent within this month.
       </li>
+      <li class="list-group-item">
+        <select class="custom-select" id="month-selector">
+          <option selected> Select another month to view for budget values </option>
+          {% for month in months %}
+          <option value="{{ month.strftime("%Y-%m-%d") }}"> {{ month.strftime("%B %Y") }} </option>
+          {% endfor %}
+        </select>
+      </li>
     </ul>
   </div>
 </div>
 
-<table class="table">
-  <thead class="thead-light">
-    <tr>
-      <th scope="col">Category</th>
-      <th scope="col">Monthly Budget</th>
-      <th scope="col">Remaining Amount</th>
-      <th scope="col">Status</th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="card" style="margin-top: 20pt">
+  <div class="card-body">
+    <h2> Showing Budget for {{ selected_month.strftime("%B %Y") }} </h2>
+  </div>
 
-    {% for row in rows %}
-    <tr class="{{ row["status_class"] }}">
-      <td>{{ row["category"].replace("_", " ")|capitalize }}</td>
-      <td>{{ row["budget"] }}</td>
-      <td>{{ row["remaining"] }}</td>
-      <td>{{ row["status"] }}</td>
-    </tr>
-    {% endfor %}
+  <table class="table">
+    <thead class="thead-light">
+      <tr>
+        <th scope="col">Category</th>
+        <th scope="col">Monthly Budget</th>
+        <th scope="col">Remaining Amount</th>
+        <th scope="col">Status</th>
+      </tr>
+    </thead>
+    <tbody>
 
-  </tbody>
-</table>
+      {% for row in rows %}
+      <tr class="{{ row["status_class"] }}">
+        <td>{{ row["category"].replace("_", " ")|capitalize }}</td>
+        <td>{{ row["budget"] }}</td>
+        <td>{{ row["remaining"] }}</td>
+        <td>{{ row["status"] }}</td>
+      </tr>
+      {% endfor %}
+
+    </tbody>
+  </table>
+</div>
 {% endblock %}
