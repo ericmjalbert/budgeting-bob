@@ -7,7 +7,7 @@ from .db import Database
 
 bp = Blueprint("budgets", __name__)
 
-CURRENT_MONTH = datetime.now().strftime("%Y-%m-%d")
+CURRENT_MONTH = datetime.now().replace(day=1).strftime("%Y-%m-%d")
 
 
 @bp.route("/budgets")
