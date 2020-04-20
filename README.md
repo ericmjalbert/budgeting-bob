@@ -11,7 +11,7 @@ This is a heroku web application that will store account transactions and catego
     * Use `heroku addons:open scheduler`
 7. [x] Change backend so that any assigned category is automatically applied to similar transactions
 8. [x] Update UI to allow manual Category updates/overwrites
-9. [ ] Update UI to show remaining monthly usage per budget category (report page)
+9. [x] Update UI to show remaining monthly usage per budget category (report page)
 10. [ ] Update UI to show account totals over time
 11. [ ] Add search and filter commands to the transactions page
 
@@ -22,13 +22,11 @@ This is a heroku web application that will store account transactions and catego
 
 
 ## Cindy
-
-[x] Change category 'others' to be 'other_earning'
-[ ] Need budget page to have a date selection
-[ ] Account names to transactions since numbers are not descriptive
-[x] Make a category for PENDING
-[x] Change games to be "entertainment" (for webtoons and such)
-[x] Figure out Cindy BUG with presto
-[x] Figure out what's wrong the budget
-[x] Category names should appear captialized in the dropdown
-[ ] Get the updated column to work whenever someone "SAVES" a transaction category
+[ ] How do we figure out if something's been miscategorized
+[ ] Need to figure out an easy way to get Amazon categories
+[ ] Need all budget categories to appear on the budget page. Even if there has been NO transactions for a given budget in the selected month.
+[ ] Get heroku scheduler to do the selenium update
+[ ] Be able to click on the category in "Budget" and have a filtered view of all the transactions with that category
+[ ] Make different levels of "over/under" budget to help process better
+[ ] Build "Accounts Total" Page and have a graph of the total net-worth over time to help give a high-level view of our wealth
+[ ] Figure out a way to store how the budget values (from `public.categories`) changes over time? Ie. if we do a manual change tot he budgets, we should have a log of it so it doesn't break past reports

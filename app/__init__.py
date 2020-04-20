@@ -8,7 +8,7 @@ from . import time_logs
 from . import transactions
 
 from .scripts import write_timestamp_row
-from .scripts import import_rbc_csv
+from .scripts import selenium_import_rbc_csv
 
 
 def create_app(test_config=None):
@@ -23,7 +23,7 @@ def create_app(test_config=None):
     app.register_blueprint(transactions.bp)
 
     app.cli.add_command(write_timestamp_row.write_timestamp)
-    app.cli.add_command(import_rbc_csv.main)
+    app.cli.add_command(selenium_import_rbc_csv.main)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
