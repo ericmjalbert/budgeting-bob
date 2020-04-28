@@ -14,9 +14,9 @@
 13. [ ] Setup automated selenium scrapper for RBC to work on Heroku
 
 ## Workflow TODOs 
-[ ] How do we figure out if something's been miscategorized.
-[ ] Need to figure out an easy way to get Amazon categories.
-[ ] Need all budget categories to appear on the budget page. Even if there has been NO transactions for a given budget in the selected month.
-[ ] Be able to click on the category in "Budget" and have a filtered view of all the transactions with that category.
-[ ] Make different levels of "over/under" budget to help process better.
-[ ] Setup a logging method to track how category budgets change overtime. If we do a manual change tot he budgets, we should have a log of it so it doesn't break past reports.
+* [ ] How do we figure out if something's been miscategorized.
+* [ ] Need to figure out an easy way to get Amazon categories.
+* [ ] Need all budget categories to appear on the budget page. Even if there has been NO transactions for a given budget in the selected month.
+* [ ] Be able to click on the category in "Budget" and have a filtered view of all the transactions with that category.
+* [ ] Make different levels of "over/under" budget to help process better.
+* [ ] Setup a logging method to track how category budgets change overtime. If we do a manual change tot he budgets, we should have a log of it so it doesn't break past reports.
