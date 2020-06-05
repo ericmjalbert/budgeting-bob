@@ -70,6 +70,7 @@ def download_csv_from_rbc(owner):
         time.sleep(2)
 
     try:
+        time.sleep(2)
         elem = driver.find_element_by_id("id_btn_thatwasme")
         elem.click()
         elem = driver.find_element_by_class_name("bodyLink")
