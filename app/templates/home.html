@@ -12,17 +12,6 @@
       <li class="list-group-item">
         <dl class="row">
           <dt class="col-sm-3">
-              <a href="{{ url_for('budgets.budgets') }}" class="btn btn-primary">Budgets</a>
-          </dt>
-          <dd class="col-sm-9">
-            This lists how much money has currently been spent for each budgeting category (grocery, clothing, games, etc...). It should be used as a reference to whether we are currently overbudget on certain spendings.
-          </dd>
-        </dl>
-      </li>
-
-      <li class="list-group-item">
-        <dl class="row">
-          <dt class="col-sm-3">
               <a href="{{ url_for('transactions.transactions') }}" class="btn btn-primary">Transactions</a>
           </dt>
           <dd class="col-sm-9">
@@ -34,7 +23,18 @@
       <li class="list-group-item">
         <dl class="row">
           <dt class="col-sm-3">
-              <a href="#" class="btn btn-primary">Account Totals</a>
+              <a href="{{ url_for('budgets.budgets') }}" class="btn btn-primary">Budgets</a>
+          </dt>
+          <dd class="col-sm-9">
+            This lists how much money has currently been spent for each budgeting category (grocery, clothing, games, etc...). It should be used as a reference to whether we are currently overbudget on certain spendings.
+          </dd>
+        </dl>
+      </li>
+
+      <li class="list-group-item">
+        <dl class="row">
+          <dt class="col-sm-3">
+              <a href="{{ url_for('account_totals.account_totals') }}" class="btn btn-primary">Account Totals</a>
           </dt>
           <dd class="col-sm-9">
             This page lists all our accounts (savings, credit, debts, etc.) and the current amount of money they contain based on the logged transactions.

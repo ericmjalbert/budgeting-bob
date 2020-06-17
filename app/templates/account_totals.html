@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Account Totals{% endblock %}
+
+{% block header %}
+// <script type='text/javascript' src='static/js/budgets.js'></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">Account Totals</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        This is the list of accounts and how much money they have over time.
+      </li>
+      <li class="list-group-item">
+        <select class="custom-select" id="month-selector">
+          <option selected> Select another month to view for account totals</option>
+          {% for month in months %}
+          <option value="{{ month.strftime("%Y-%m-%d") }}"> {{ month.strftime("%B %Y") }} </option>
+          {% endfor %}
+        </select>
+      </li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}
