@@ -52,6 +52,14 @@ function createAm4coreChart(dates, values) {
     chart.scrollbarX = new am4charts.XYChartScrollbar();
     chart.scrollbarX.series.push(series);
 
+    // Setup zoom initialization to past 3 months
+    chart.events.on("ready", function () {
+        dateAxis.zoomToDates(
+            dates.slice(-90),
+            dates.slice(-1)
+        );
+    });
+
     // Add cursor
     chart.cursor = new am4charts.XYCursor();
     chart.cursor.xAxis = dateAxis;
