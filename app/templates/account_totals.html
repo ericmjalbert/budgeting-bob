@@ -3,7 +3,9 @@
 {% block title %}Account Totals{% endblock %}
 
 {% block header %}
-// <script type='text/javascript' src='static/js/budgets.js'></script>
+<script src='static/js/moment.min.js'></script>
+<script src='static/js/Chart.min.js'></script>
+<script type='text/javascript' src='static/js/account_totals.js'></script>
 {% endblock %}
 
 {% block content %}
@@ -16,12 +18,9 @@
         This is the list of accounts and how much money they have over time.
       </li>
       <li class="list-group-item">
-        <select class="custom-select" id="month-selector">
-          <option selected> Select another month to view for account totals</option>
-          {% for month in months %}
-          <option value="{{ month.strftime("%Y-%m-%d") }}"> {{ month.strftime("%B %Y") }} </option>
-          {% endfor %}
-        </select>
+        <div>
+          <canvas id="myChart" width="400" height="400"></canvas>
+        </div>
       </li>
     </ul>
   </div>
