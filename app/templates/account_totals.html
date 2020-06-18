@@ -5,6 +5,11 @@
 {% block header %}
 <script src='static/js/moment.min.js'></script>
 <script src='static/js/Chart.min.js'></script>
+
+<script src="https://www.amcharts.com/lib/4/core.js"></script>
+<script src="https://www.amcharts.com/lib/4/charts.js"></script>
+<script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
 <script type='text/javascript' src='static/js/account_totals.js'></script>
 {% endblock %}
 
@@ -18,9 +23,7 @@
         This is the list of accounts and how much money they have over time.
       </li>
       <li class="list-group-item">
-        <div>
-          <canvas id="myChart" width="400" height="400"></canvas>
-        </div>
+        <div id="myChart" style="width:100%; height:500px"></div>
       </li>
     </ul>
   </div>
