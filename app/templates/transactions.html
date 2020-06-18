@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
+<div class="card mb-3">
   <div class="card-body">
     <h5 class="card-title">Transactions</h5>
     <ul class="list-group list-group-flush">
@@ -18,7 +18,14 @@
   </div>
 </div>
 
-<table class="table">
+<div id="searchbar" class="input-group mb-3">
+  <input type="text" class="form-control" placeholder="Enter Search word here" aria-label="Enter Search word here" aria-describedby="search">
+  <div class="input-group-append" id="clear-search">
+    <button class="btn btn-outline-danger" type="button">Clear</button>
+  </div>
+</div>
+
+<table class="table mb-3" style="table-layout:fixed;">
   <thead class="thead-light">
     <tr>
       <th scope="col">Account Alias</th>
@@ -30,7 +37,6 @@
     </tr>
   </thead>
   <tbody>
-
     {% for row in rows %}
     <tr>
       <td class="id-value" style="display:none;">{{ row["id"] }}</td>
