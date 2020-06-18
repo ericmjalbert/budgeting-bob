@@ -33,4 +33,33 @@ def get_account_daily_totals():
     cleaned = [
         {"day": row["day"].strftime("%Y-%m-%d"), "total": row["total"]} for row in data
     ]
+
+    cleaned = add_initial_amount_to_first_day(cleaned)
+
+    return jsonify(cleaned)
+
+
+def add_initial_amount_to_first_day(cleaned):
+    with Database() as db:
+        sql = f"""
+            SELECT SUM(initial_amount) AS total FROM accounts;
+        """
+        db.execute(sql)
+        initial_amount = db.fetchone()
+
+    cleaned[0]["total"] += initial_amount["total"]
+    return cleaned
+
+
+@bp.route("/get_account_initial_amount")
+@login_required
+def get_account_initial_amount():
+    with Database() as db:
+        sql = f"""
+            SELECT SUM(initial_amount) AS total FROM accounts;
+        """
+        db.execute(sql)
+        data = db.fetchall()
+
+    cleaned = {"total": row["total"] for row in data}
     return jsonify(cleaned)
