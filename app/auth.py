@@ -20,13 +20,15 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 def register():
     if request.method == "POST":
         # Hard-code username so there can be only 1 user account
-        username = "admin_jalbert"
+        username = request.form["username"]
         password = request.form["password"]
         error = None
 
         with Database() as db:
             if not username:
                 error = "Username is required."
+            elif username not in ('admin_jalbert', 'demo'):
+                error = "Username is not in acceptable list"
             elif not password:
                 error = "Password is required."
 
