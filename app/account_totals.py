@@ -10,7 +10,38 @@ bp = Blueprint("account_totals", __name__)
 @bp.route("/account_totals")
 @login_required
 def account_totals():
-    return render_template("account_totals.html")
+    with Database() as db:
+        sql = """
+            SELECT
+                a.owner,
+                a.type,
+                a.description,
+                a.initial_amount + COALESCE(t.value, 0) AS current_total
+            FROM accounts AS a
+            LEFT JOIN (
+                SELECT account_number, SUM(value) AS value FROM transactions GROUP BY 1
+            ) AS t
+                ON t.account_number = a.number
+        """
+        db.execute(sql)
+        accounts = db.fetchall()
+
+    with Database() as db:
+        sql = """
+            SELECT MAX(updated) FROM transactions
+        """
+        db.execute(sql)
+        result = db.fetchone()
+    latest_transaction = result["max"]
+
+    current_overall_total = sum([account["current_total"] for account in accounts])
+
+    return render_template(
+        "account_totals.html",
+        latest_transaction=latest_transaction,
+        accounts=accounts,
+        current_overall_total=current_overall_total,
+    )
 
 
 @bp.route("/get_account_daily_totals")

@@ -20,6 +20,37 @@
     <h5 class="card-title">Account Totals</h5>
     <ul class="list-group list-group-flush">
       <li class="list-group-item">
+          This is the list of accounts and how much money they currently have based on the lastest transactions from: <br/>
+        <b>{{ latest_transaction }}</b>
+      </li>
+
+      <table class="table table-sm table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Owner</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+            <th scope="col">Current Total</th>
+          </tr>
+        </thead>
+        {% for account in accounts %}
+        <tbody>
+          <tr>
+              <td>{{ account["owner"] | capitalize }}</td>
+              <td>{{ account["type"] | capitalize }}</td>
+              <td>{{ account["description"] | capitalize }}</td>
+              <td>{{ "${:,.2f}".format(account["current_total"]) }}</td>
+          </tr>
+        {% endfor %}
+          <hr/>
+          <tr class="table-success">
+              <td colspan="3">Total Across All Accounts</td>
+              <td>{{ "${:,.2f}".format(current_overall_total) }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <li class="list-group-item">
         This is the list of accounts and how much money they have over time.
       </li>
       <li class="list-group-item">
