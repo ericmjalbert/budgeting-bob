@@ -10,15 +10,12 @@ from . import transactions
 
 from .scripts import write_timestamp_row
 from .scripts import selenium_import_rbc_csv
-from db import initialize_database
 
 
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(SECRET_KEY="dev", DATABASE_URL=os.environ["DATABASE_URL"])
-
-    initialize_database()
 
     app.register_blueprint(account_totals.bp)
     app.register_blueprint(auth.bp)
