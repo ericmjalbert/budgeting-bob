@@ -253,5 +253,3 @@ def main(owner):
 
 if __name__ == "__main__":
     main(owner=None)
-
-# TODO Need to figure out how to run this on heroku

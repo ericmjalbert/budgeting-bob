@@ -18,7 +18,6 @@ $PSQL -c "
     );
 "
 
-# TODO make this properly update so that the hard-coded items here are always true
 $PSQL -c "
     INSERT INTO public.categories VALUES
     ('athletics', 'Things that help us be more althetic', 500),
