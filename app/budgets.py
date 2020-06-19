@@ -21,10 +21,11 @@ def budgets():
             WITH cumulative_budget AS (
                 SELECT
                     category,
+                    MIN(budget) AS monthly_budget,
                     SUM(budget) AS budget
                 FROM public.categories
                 CROSS JOIN generate_series('2020-01-01', CURRENT_DATE, '1 month')
-                WHERE budget >= 0
+                WHERE budget > 0
                 GROUP BY 1
             ),
 
@@ -35,20 +36,23 @@ def budgets():
                 FROM public.transactions
                 WHERE transaction_date > '2020-01-01'
                     AND category != 'transfer_between_accounts'
+                    AND -1 * value > 0
                 GROUP BY 1
             ),
 
             specific_month_remaining AS (
                 SELECT
                     category,
-                    ca.budget,
+                    ca.budget AS monthly_budget,
                     ca.budget - (-1 * SUM(tr.value)) AS remaining,
                     CASE
+                        WHEN ca.budget - (-1 * SUM(tr.value)) < -1 * ca.budget / 2 THEN 'Very Over Budget'
                         WHEN ca.budget - (-1 * SUM(tr.value)) < 0 THEN 'Over Budget'
                         WHEN ca.budget - (-1 * SUM(tr.value)) >= 0 THEN 'Under Budget'
                         END AS status,
                     -- need this column for bootstrap coloring
                     CASE
+                        WHEN ca.budget - (-1 * SUM(tr.value)) < -1 * ca.budget / 2 THEN 'table-danger'
                         WHEN ca.budget - (-1 * SUM(tr.value)) < 0 THEN 'table-warning'
                         WHEN ca.budget - (-1 * SUM(tr.value)) >= 0 THEN 'table-success'
                         END AS status_class
@@ -57,21 +61,21 @@ def budgets():
                     USING (category)
                 WHERE category != 'transfer_between_accounts'
                     AND DATE_TRUNC('month', tr.transaction_date) = '{selected_month}'
-                    AND ca.budget >= 0
+                    AND ca.budget > 0
                 GROUP BY 1, 2
             )
 
             SELECT
-                category,
-                smr.budget,
-                ROUND(smr.remaining::NUMERIC, 2) AS remaining,
+                cb.category,
+                cb.monthly_budget AS budget,
+                COALESCE(ROUND(smr.remaining::NUMERIC, 2), cb.monthly_budget) AS remaining,
                 ROUND(cb.budget - cs.spend::NUMERIC, 2) AS overage,
-                smr.status,
-                smr.status_class
-            FROM specific_month_remaining AS smr
-            INNER JOIN cumulative_budget AS cb
+                COALESCE(smr.status, 'Under Budget') AS status,
+                COALESCE(smr.status_class, 'table-success') AS status_class
+            FROM cumulative_budget AS cb
+            LEFT JOIN cumulative_spending AS cs
                 USING (category)
-            INNER JOIN cumulative_spending AS cs
+            LEFT JOIN specific_month_remaining AS smr
                 USING (category)
             ORDER BY 1
             """
@@ -84,7 +88,7 @@ def budgets():
         "budgets.html",
         rows=budget_rows,
         months=available_months,
-        selected_month=datetime.strptime(selected_month, "%Y-%m-%d")
+        selected_month=datetime.strptime(selected_month, "%Y-%m-%d"),
     )
 
 
