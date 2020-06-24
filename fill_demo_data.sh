@@ -19,7 +19,12 @@ WITH account_number_mapper AS (
 
 SELECT
     id,
-    account_type,
+    CASE demo_number 
+        WHEN '1111' THEN 'Savings'
+        WHEN '2222' THEN 'Visa'
+        WHEN '3333' THEN 'Savings'
+        WHEN '4444' THEN 'Visa'
+        END AS account_type,
     anm.demo_number AS account_number,
     '2020-01-01'::TIMESTAMP + interval '1 day' * DATE_PART('day', transaction_date - '2019-11-01') / 1.7 AS transaction_date,
     CASE 
