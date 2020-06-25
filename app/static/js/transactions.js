@@ -20,24 +20,6 @@ function clearSearch() {
     $('tbody').find('tr').show();
 }
 
-function setupSearchWhenDoneTyping() {
-    //setup before functions
-    var typingTimer;               //timer identifier
-    var doneTypingInterval = 500;  //time in ms, 0.5 second
-    var $input = $('#searchbar').find('input');
-
-    //on keyup, start the countdown
-    $input.on('keyup', function () {
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(searchTransactions, doneTypingInterval);
-    });
-
-    //on keydown, clear the countdown
-    $input.on('keydown', function () {
-        clearTimeout(typingTimer);
-    });
-}
-
 function searchTransactions() {
     const searchTerm = $('#searchbar').find('input').val().toLowerCase();
     $('tbody').find('tr').hide();
@@ -55,9 +37,9 @@ function searchTransactions() {
 }
 
 function main() {
-    $('.save').click(saveCategoryButton);
-    $('#clear-search').click(clearSearch);
-    setupSearchWhenDoneTyping();
+  $('.save').click(saveCategoryButton);
+  $('#search').click(searchTransactions);
+  $('#clear-search').click(clearSearch);
 }
 
 $(document).ready(function() {
