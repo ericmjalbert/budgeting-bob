@@ -1,8 +1,9 @@
 # Budgeting Bob
 
-This is a heroku web application that will store account transactions and categorize them for proper budgetting.
+This is a [Flask](https://flask.palletsprojects.com/en/1.1.x/) web application that is running on heroku.
+It will store account transactions and categorize them for proper budgetting.
 
-There is a viewable demo with some dummy data to showcase the application: http://budgeting-bob-demo.herokuapp.com/. Login credentials for the demo are: `username = demo` and `password = demo`.
+There is a viewable demo with some [dummy data](https://github.com/ericmjalbert/budgeting-bob/blob/master/fill_demo_data.sh) to showcase the application: http://budgeting-bob-demo.herokuapp.com/. Login credentials for the demo are: `username = demo` and `password = demo`.
 
 ## Installation
 
@@ -13,11 +14,6 @@ Create a virtualenv named `venv` and then `pip install -r requirements.txt`.
 To run the webapp locally:
 ```bash
 FLASK_DEBUG=1 FLASK_APP=app venv/bin/python -m flask run
-```
-
-To run the CSV import file:
-```bash
-FLASK_DEBUG=1 FLASK_APP=app venv/bin/python -m flask import-rbc-csv OWNER_NAME
 ```
 
 ## User Access
