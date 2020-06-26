@@ -35,7 +35,7 @@ function searchTransactions() {
             || $(row).find('td:nth-child(3)').text().toLowerCase().indexOf(searchTerm) != -1
             || $(row).find('td:nth-child(4)').text().toLowerCase().indexOf(searchTerm) != -1
             || $(row).find('td:nth-child(5)').text().toLowerCase().indexOf(searchTerm) != -1
-            || $(row).find('td:nth-child(6)').text().toLowerCase().indexOf(searchTerm) != -1
+            || $(row).find('td:nth-child(6)').find('option:selected').text().toLowerCase().indexOf(searchTerm) != -1
         ) {
             $(row).show();
         };
