@@ -28,7 +28,7 @@
   </div>
 </div>
 
-<table class="table mb-3" style="table-layout:fixed;">
+<table class="table mb-3" >
   <thead class="thead-light">
     <tr>
       <th scope="col">Account Alias</th>
@@ -47,18 +47,18 @@
       <td>{{ row["transaction_date"] }}</td>
       <td>{{ row["value"] }}</td>
       <td>{{ row["description"] }}</td>
-      <td class="category">{{ row["category"] }}</td>
+      <td class="category">
+        <select class="custom-select category-save" id="category">
+          {% for val in categories %}
+          <option value="{{ val["category"] }}"
+            {%- if val["category"] == row["category"] %} selected {% endif -%}
+            > {{ val["category"]|capitalize }} </option>
+          {% endfor %}
+        </select>
+      </td>
       <td>
-        <div class="input-group category-save">
-          <select class="custom-select" id="category">
-            <option selected>{{ row["category"] }}</option>
-            {% for val in categories %}
-              <option value="{{ category }}"> {{ val["category"]|capitalize }} </option>
-            {% endfor %}
-          </select>
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary save" type="button">Save</button>
-          </div>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary save" type="button">Save</button>
         </div>
       </td>
     </tr>

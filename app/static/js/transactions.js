@@ -1,7 +1,12 @@
+function highlightSaveButton() {
+    $(this).closest('tr').find('.save').addClass('btn-info');
+    $(this).closest('tr').find('.save').removeClass('btn-outline-secondary');
+}
+
 function saveCategoryButton() {
     // Get the row id and new category value
     var id = $(this).closest('tr').find('.id-value').text();
-    var category = $(this).closest('.category-save').find('option:selected').text();
+    var category = $(this).closest('tr').find('.category-save').find('option:selected').text();
 
     // Write it to DB
     $.getJSON(
@@ -9,8 +14,9 @@ function saveCategoryButton() {
         data={"category": category, "id": id}
     );
 
-    // Overwrite the displayed category
-    $(this).closest('tr').find('.category').text(category);
+    // Remove save button highlight
+    $(this).closest('tr').find('.save').addClass('btn-outline-secondary');
+    $(this).closest('tr').find('.save').removeClass('btn-info');
 
     return true;
 }
@@ -37,6 +43,8 @@ function searchTransactions() {
 }
 
 function main() {
+
+  $('.category-save').on('change', highlightSaveButton);
   $('.save').click(saveCategoryButton);
   $('#search').click(searchTransactions);
   $('#clear-search').click(clearSearch);
