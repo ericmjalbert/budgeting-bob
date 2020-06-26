@@ -49,6 +49,7 @@
       <td>{{ row["description"] }}</td>
       <td class="category">
         <select class="custom-select category-save" id="category">
+          <option disabled selected value> None </option>
           {% for val in categories %}
           <option value="{{ val["category"] }}"
             {%- if val["category"] == row["category"] %} selected {% endif -%}
