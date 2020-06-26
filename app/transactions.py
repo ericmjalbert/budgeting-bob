@@ -27,7 +27,7 @@ def transactions():
             INNER JOIN public.accounts
                 ON accounts.type = account_type
                 AND accounts.number = account_number
-            ORDER BY transaction_date DESC
+            ORDER BY transaction_date DESC, transactions.id
         """
         )
         table_rows = db.fetchall()
