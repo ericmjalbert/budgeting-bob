@@ -7,31 +7,21 @@
 {% endblock %}
 
 {% block content %}
-<div class="card">
-  <div class="card-body">
-    <h5 class="card-title">Budget Report</h5>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item">
-        This is the list of each budget category and the remaining amount of money that can be spent within this month.
-      </li>
-      <li class="list-group-item">
-        <select class="custom-select" id="month-selector">
-          <option selected> Select another month to view for budget values </option>
-          {% for month in months %}
-          <option value="{{ month.strftime("%Y-%m-%d") }}"> {{ month.strftime("%B %Y") }} </option>
-          {% endfor %}
-        </select>
-      </li>
-    </ul>
-  </div>
-</div>
 
 <div class="card" style="margin-top: 20pt">
   <div class="card-body">
-    <h2> Showing Budget for {{ selected_month.strftime("%B %Y") }} </h2>
+    <h3 class="card-title">Showing Budget Report for:
+      <select class="custom-select" id="month-selector">
+        {% for month in months %}
+        <option value="{{ month.strftime("%Y-%m-%d") }}"
+            {%- if month.strftime("%Y-%m-%d") == selected_month.strftime("%Y-%m-%d") %} selected {% endif -%}
+        > {{ month.strftime("%B %Y") }} </option>
+        {% endfor %}
+      </select>
+    </h3>
   </div>
 
-  <table class="table">
+  <table class="table table-sm">
     <thead class="thead-light">
       <tr>
         <th scope="col">Category</th>
