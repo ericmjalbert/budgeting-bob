@@ -22,7 +22,7 @@
   <div class="input-group-prepend" id="search">
     <button class="btn btn-outline-secondary" type="button">Search</button>
   </div>
-  <input type="text" class="form-control" placeholder="Enter Search word here" aria-label="Enter Search word here" aria-describedby="search">
+  <input type="text" class="form-control" placeholder="Enter Search word here" aria-label="Enter Search word here" aria-describedby="search" onkeypress="return searchBarKeyPress(event)">
   <div class="input-group-append" id="clear-search">
     <button class="btn btn-outline-danger" type="button">Clear</button>
   </div>

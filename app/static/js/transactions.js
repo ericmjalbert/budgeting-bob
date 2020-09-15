@@ -1,3 +1,11 @@
+function searchBarKeyPress(e) {
+    //See notes about 'which' and 'key'
+    if (e.keyCode == 13) {
+        searchTransactions()
+        return false;
+    }
+}
+
 function highlightSaveButton() {
     $(this).closest('tr').find('.save').addClass('btn-info');
     $(this).closest('tr').find('.save').removeClass('btn-outline-secondary');
