@@ -56,6 +56,7 @@ def download_csv_from_rbc(owner):
     elem.click()
 
     try:
+        time.sleep(2)
         elem = driver.find_element_by_class_name("contentframework-altrow")
         question_text = elem.text.split(": ")[1]
         answer_to_use = security_questions[question_text]
