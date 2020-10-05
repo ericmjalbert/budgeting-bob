@@ -7,6 +7,7 @@ import click
 from selenium import webdriver
 from selenium.common.exceptions import (
     ElementNotInteractableException,
+    ElementNotVisibleException,
     NoSuchElementException,
 )
 from selenium.webdriver.support.ui import Select
@@ -50,7 +51,7 @@ def download_csv_from_rbc(owner):
     # 2. Sign in using environment vars
     elem = driver.find_element_by_id("K1")
     elem.send_keys(username)
-    elem = driver.find_element_by_id("Q1")
+    elem = driver.find_element_by_xpath("//input[@type = 'password']")
     elem.send_keys(password)
     elem = driver.find_element_by_xpath("//button[@type = 'submit']")
     elem.click()
@@ -96,16 +97,17 @@ def download_csv_from_rbc(owner):
         # update to pvq confirmation
         elem = driver.find_element_by_class_name("bodyLink")
         elem.click()
-    except (NoSuchElementException, ElementNotInteractableException):
+    except (NoSuchElementException, ElementNotInteractableException, ElementNotVisibleException):
         time.sleep(2)
 
     # 3. go to the CSV download page and download the past week(?) of transactions
     try:
         elem = driver.find_element_by_id("modalWindowCloseButton")
         elem.click()
-    except (NoSuchElementException, ElementNotInteractableException):
+    except (NoSuchElementException, ElementNotInteractableException, ElementNotVisibleException):
         time.sleep(2)
 
+    time.sleep(2)
     elem = driver.find_element_by_xpath("//a[@ga-event-label = 'Documents']")
     elem.click()
 
