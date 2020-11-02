@@ -11,12 +11,15 @@ from selenium.common.exceptions import (
     NoSuchElementException,
 )
 from selenium.webdriver.support.ui import Select
+from webdriver_manager.chrome import ChromeDriverManager
 
 from flask.cli import with_appcontext
 import pandas as pd
 
 from app.db import PandasConnection
 import app  # noqa # pylint: disable=unused-import
+
+SLEEP_TIME = 1
 
 
 def get_security_questions(owner):
@@ -29,24 +32,43 @@ def get_security_questions(owner):
     return security_questions
 
 
-def download_csv_from_rbc(owner):
-    username = os.getenv(f"RBC_{owner}")
-    password = os.getenv(f"RBC_{owner}_PASS")
-    security_questions = get_security_questions(owner)
+def try_click(driver, selenium_func, args):
+    """This contains the try-except logic for doing selenium clicks."""
+    try:
+        elem = getattr(driver, selenium_func)(args)
+        elem.click()
+    except (
+        NoSuchElementException,
+        ElementNotInteractableException,
+        ElementNotVisibleException,
+    ):
+        time.sleep(SLEEP_TIME)
 
+
+def initialize_headless_chrome():
     # initialize driver object and change the default download directory
     cwd = os.getcwd()
     chrome_options = webdriver.ChromeOptions()
     prefs = {"download.default_directory": cwd}
     chrome_options.add_experimental_option("prefs", prefs)
 
-    driver = webdriver.Chrome(options=chrome_options)
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=chrome_options)
 
-    # 1. Open signin page on RBC
+    return driver
+
+
+def navigate_rbc_home_page(driver):
     driver.get("https://www.rbc.com")
     time.sleep(3)
     elem = driver.find_element_by_id("header-sign-in-btn")
     elem.click()
+
+
+
+def navigate_rbc_login_page(driver, owner):
+    username = os.getenv(f"RBC_{owner}")
+    password = os.getenv(f"RBC_{owner}_PASS")
+    security_questions = get_security_questions(owner)
 
     # 2. Sign in using environment vars
     elem = driver.find_element_by_id("K1")
@@ -56,6 +78,7 @@ def download_csv_from_rbc(owner):
     elem = driver.find_element_by_xpath("//button[@type = 'submit']")
     elem.click()
 
+    # try to enter security_questions answers if they ask
     try:
         time.sleep(2)
         elem = driver.find_element_by_class_name("contentframework-altrow")
@@ -71,6 +94,7 @@ def download_csv_from_rbc(owner):
     except (NoSuchElementException, ElementNotInteractableException):
         time.sleep(2)
 
+    # Try to accept the "re-enter all your security questions and answers"
     try:
         time.sleep(2)
         elem = driver.find_element_by_id("id_btn_thatwasme")
@@ -80,7 +104,7 @@ def download_csv_from_rbc(owner):
         elem = driver.find_element_by_id("id_btn_continue")
         elem.click()
 
-        # Update persoanl verification questions
+        # Update persoanl verification questions to the same answer they were before
         for i in [1, 2, 3]:
             elem = Select(driver.find_element_by_id(f"pvqlist{i}"))
             question = [
@@ -98,20 +122,30 @@ def download_csv_from_rbc(owner):
         # update to pvq confirmation
         elem = driver.find_element_by_class_name("bodyLink")
         elem.click()
-    except (NoSuchElementException, ElementNotInteractableException, ElementNotVisibleException):
+    except (
+        NoSuchElementException,
+        ElementNotInteractableException,
+        ElementNotVisibleException,
+    ):
         time.sleep(2)
 
-    # 3. go to the CSV download page and download the past week(?) of transactions
-    try:
-        elem = driver.find_element_by_id("modalWindowCloseButton")
-        elem.click()
-    except (NoSuchElementException, ElementNotInteractableException, ElementNotVisibleException):
-        time.sleep(2)
+
+def navigate_rbc_account_summary(driver):
+    """Close any modals and click to documents page."""
+
+    # close possible modals
+    try_click(driver, "find_element_by_id", "modalWindowCloseButton")
+    try_click(driver, "find_element_by_xpath", "//button[@aria-label='Close onboarding modal window']")
 
     time.sleep(2)
-    elem = driver.find_element_by_xpath("//a[@ga-event-label = 'Documents']")
-    elem.click()
 
+    # Try clicking on statemends/document page
+    try_click(driver, "find_element_by_xpath", "//a[@ga-event-label = 'Documents']")
+    try_click(driver, "find_element_by_id", "ribbon-statements")
+
+
+def navigate_rbc_download_page(driver):
+    """Click select specific CSV download settings."""
     elem = driver.find_element_by_class_name("leftnav-firstpage")
     elem = elem.find_element_by_xpath("//ul/li/a[text() = 'Download Transactions']")
     time.sleep(1)
@@ -129,8 +163,20 @@ def download_csv_from_rbc(owner):
     print("Downloading file")
     time.sleep(2)
 
+
+def download_csv_from_rbc(owner):
+
+    driver = initialize_headless_chrome()
+    driver.get("https://www.rbc.com")
+
+    navigate_rbc_home_page(driver)
+    navigate_rbc_login_page(driver, owner)
+    navigate_rbc_account_summary(driver)
+    navigate_rbc_download_page(driver)
+
     driver.close()
 
+    cwd = os.getcwd()
     csv_filename = max(
         [f"{cwd}/{f}" for f in os.listdir(cwd) if not f.startswith(".")],
         key=os.path.getctime,
