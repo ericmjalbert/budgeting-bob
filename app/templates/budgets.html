@@ -33,6 +33,14 @@
     </thead>
     <tbody>
 
+      <tr class="table-info">
+        <td>Total</td>
+        <td>{{ total["budget"] }}</td>
+        <td>{{ total["remaining"] }}</td>
+        <td>{{ total["overage"] }}</td>
+        <td></td>
+      </tr>
+
       {% for row in rows %}
       <tr class="{{ row["status_class"] }}">
         <td>{{ row["category"].replace("_", " ")|capitalize }}</td>
