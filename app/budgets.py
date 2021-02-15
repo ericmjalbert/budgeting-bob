@@ -82,11 +82,18 @@ def budgets():
         )
         budget_rows = db.fetchall()
 
+        total = {
+            "budget": sum([row["budget"] for row in budget_rows]),
+            "remaining": sum([row["remaining"] for row in budget_rows]),
+            "overage": sum([row["overage"] for row in budget_rows]),
+        }
+
     available_months = get_available_months()
 
     return render_template(
         "budgets.html",
         rows=budget_rows,
+        total=total,
         months=available_months,
         selected_month=datetime.strptime(selected_month, "%Y-%m-%d"),
     )
