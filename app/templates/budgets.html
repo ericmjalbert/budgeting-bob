@@ -24,30 +24,40 @@
   <table class="table table-sm">
     <thead class="thead-light">
       <tr>
-        <th scope="col">Category</th>
-        <th scope="col">Monthly Budget</th>
-        <th scope="col">Remaining Amount</th>
-        <th scope="col">Overall Overage</th>
-        <th scope="col">Status</th>
+        <th style="width: 16.25%" scope="col">Category</th>
+        <th style="width: 30%" scope="col">Monthly Budget</th>
+        <th style="width: 16.25%" scope="col">Remaining Amount</th>
+        <th style="width: 16.25%" scope="col">Overall Overage</th>
+        <th style="width: 21.25%" scope="col">Status</th>
       </tr>
     </thead>
     <tbody>
 
-      <tr class="table-info">
+      <tr class="table-info totals">
         <td>Total</td>
         <td>{{ total["budget"] }}</td>
         <td>{{ total["remaining"] }}</td>
         <td>{{ total["overage"] }}</td>
         <td></td>
       </tr>
-
       {% for row in rows %}
       <tr class="{{ row["status_class"] }}">
-        <td>{{ row["category"].replace("_", " ")|capitalize }}</td>
-        <td>{{ row["budget"] }}</td>
-        <td>{{ row["remaining"] }}</td>
-        <td>{{ row["overage"] }}</td>
-        <td>{{ row["status"] }}</td>
+        <td class="align-middle category-name">{{ row["category"].replace("_", " ")|capitalize }}</td>
+        <td class="align-middle"> 
+          <div class="container">
+            <div class="row align-items-center h-100">
+              <button type="button" class="btn btn-outline-secondary btn-sm budget">
+                <i class="fa fa-pencil" aria-hidden="true"></i> 
+              </button>
+              <div class="budget-text col-sm">
+                {{ row["budget"] }}
+              </div>
+            </div>
+          </div>
+        </td>
+        <td class="align-middle">{{ row["remaining"] }}</td>
+        <td class="align-middle">{{ row["overage"] }}</td>
+        <td class="align-middle">{{ row["status"] }}</td>
       </tr>
       {% endfor %}
 
