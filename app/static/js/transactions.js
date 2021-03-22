@@ -1,7 +1,7 @@
 function searchBarKeyPress(e) {
     //See notes about 'which' and 'key'
     if (e.keyCode == 13) {
-        searchTransactions()
+        searchTransactions
         return false;
     }
 }
@@ -51,7 +51,6 @@ function searchTransactions() {
 }
 
 function main() {
-
   $('.category-save').on('change', highlightSaveButton);
   $('.save').click(saveCategoryButton);
   $('#search').click(searchTransactions);
