@@ -1,3 +1,12 @@
+function monthSelector() {
+  // Get the month value that's is selected
+  var month = $(this).val()
+
+  // show budgets of selected month
+  location.href = '/transactions?selected_month=' + month
+}
+
+
 function searchBarKeyPress(e) {
     //See notes about 'which' and 'key'
     if (e.keyCode == 13) {
@@ -51,6 +60,7 @@ function searchTransactions() {
 }
 
 function main() {
+  $('#month-selector').change(monthSelector);
   $('.category-save').on('change', highlightSaveButton);
   $('.save').click(saveCategoryButton);
   $('#search').click(searchTransactions);
