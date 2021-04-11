@@ -16,6 +16,18 @@
       </li>
     </ul>
   </div>
+
+  <div class="card-body">
+    <h3 class="card-title">Showing Transactions made in:
+      <select class="custom-select" id="month-selector">
+        {% for month in months %}
+        <option value="{{ month.strftime("%Y-%m-%d") }}"
+            {%- if month.strftime("%Y-%m-%d") == selected_month.strftime("%Y-%m-%d") %} selected {% endif -%}
+        > {{ month.strftime("%B %Y") }} </option>
+        {% endfor %}
+      </select>
+    </h3>
+  </div>
 </div>
 
 <div id="searchbar" class="input-group mb-3">

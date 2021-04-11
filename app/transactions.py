@@ -1,6 +1,8 @@
+from datetime import datetime
 from flask import Blueprint, render_template, request
 
 from .auth import login_required
+from .date import CURRENT_MONTH, get_available_months
 from .db import Database
 
 
@@ -10,10 +12,11 @@ bp = Blueprint("transactions", __name__)
 @bp.route("/transactions")
 @login_required
 def transactions():
+    selected_month = request.args.get("selected_month") or CURRENT_MONTH
 
     with Database() as db:
         db.execute(
-            """
+            f"""
             SELECT
                 transactions.id,
                 accounts.owner || ' ' || accounts.type AS account_alias,
@@ -27,6 +30,7 @@ def transactions():
             INNER JOIN public.accounts
                 ON accounts.type = account_type
                 AND accounts.number = account_number
+            WHERE DATE_TRUNC('month', transaction_date) = '{selected_month}'
             ORDER BY transaction_date DESC, transactions.id
         """
         )
@@ -35,8 +39,14 @@ def transactions():
         db.execute("SELECT category FROM public.categories ORDER BY category")
         category_names = db.fetchall()
 
+    available_months = get_available_months()
+
     return render_template(
-        "transactions.html", rows=table_rows, categories=category_names
+        "transactions.html",
+        rows=table_rows,
+        categories=category_names,
+        months=available_months,
+        selected_month=datetime.strptime(selected_month, "%Y-%m-%d"),
     )
 
 
