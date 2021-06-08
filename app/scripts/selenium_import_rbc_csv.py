@@ -64,7 +64,6 @@ def navigate_rbc_home_page(driver):
     elem.click()
 
 
-
 def navigate_rbc_login_page(driver, owner):
     username = os.getenv(f"RBC_{owner}")
     password = os.getenv(f"RBC_{owner}_PASS")
@@ -81,16 +80,17 @@ def navigate_rbc_login_page(driver, owner):
     # try to enter security_questions answers if they ask
     try:
         time.sleep(2)
-        elem = driver.find_element_by_class_name("contentframework-altrow")
-        question_text = elem.text.split(": ")[1]
+        elem = driver.find_element_by_class_name("pvq-label")
+        question_text = elem.text
         answer_to_use = security_questions[question_text]
 
-        elem = driver.find_element_by_id("pvqAnswer")
+        elem = driver.find_element_by_class_name("rbc-input")
         elem.send_keys(answer_to_use)
         time.sleep(1)
 
-        elem = driver.find_element_by_id("id_btn_continue")
+        elem = driver.find_element_by_class_name("pvq-button")
         elem.click()
+
     except (NoSuchElementException, ElementNotInteractableException):
         time.sleep(2)
 
