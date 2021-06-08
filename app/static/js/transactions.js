@@ -10,7 +10,7 @@ function monthSelector() {
 function searchBarKeyPress(e) {
     //See notes about 'which' and 'key'
     if (e.keyCode == 13) {
-        searchTransactions
+        searchTransactions();
         return false;
     }
 }
