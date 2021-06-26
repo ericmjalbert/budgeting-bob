@@ -139,18 +139,14 @@ def navigate_rbc_account_summary(driver):
 
     time.sleep(2)
 
-    # Try clicking on statemends/document page
-    try_click(driver, "find_element_by_xpath", "//a[@ga-event-label = 'Documents']")
-    try_click(driver, "find_element_by_id", "ribbon-statements")
+    # Try clicking on Payment history page
+    try_click(driver, "find_element_by_xpath", "//a[@rbcportalsubmit = 'AS_Payement_History']")
+    try_click(driver, "find_element_by_xpath", "//a[@ga-event-label = 'Account Services']")
+    try_click(driver, "find_element_by_xpath", "//a[@title = 'Download Transactions']")
 
 
 def navigate_rbc_download_page(driver):
     """Click select specific CSV download settings."""
-    elem = driver.find_element_by_class_name("leftnav-firstpage")
-    elem = elem.find_element_by_xpath("//ul/li/a[text() = 'Download Transactions']")
-    time.sleep(1)
-    elem.click()
-
     elem = driver.find_element_by_id("Excel")
     elem.click()
 
