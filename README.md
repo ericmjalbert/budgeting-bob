@@ -44,6 +44,16 @@ There are a list of secrets in the .env.template that correspond to this automat
 Understand that this whole feature is very experimental and it fails sometimes.
 The [source code](https://github.com/ericmjalbert/budgeting-bob/blob/master/app/scripts/selenium_import_rbc_csv.py) can be edited to match your specific needs.
 
+## Deployment
+
+This service is currently setup to be deployed to heroku. There are 2 different environment to deploy to, demo and prod.
+
+These deployments are done with the following commands:
+```
+git push heroku
+git push heroku-demo
+```
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
