@@ -25,7 +25,6 @@ function saveCategoryButton() {
     var id = $(this).closest('tr').find('.id-value').text();
     var category = $(this).closest('tr').find('.category-save').find('option:selected').text();
 
-    // Write it to DB
     $.getJSON(
         url='/save_new_category',
         data={"category": category, "id": id}

@@ -31,8 +31,9 @@ To complete this just have a `.env` (use `.env.template` as example) with the Da
 
 Once you got a database, you can initialize all the table by running the `./initialize_db_demo.sh` script. Feel free to edit it as this data was setup for demo purposes.
 
+## Data Import Scripts
 
-## RBC CSV automation
+### RBC CSV automation
 
 There exist's a Selenium script that will log into RBC and navigate to the "Download CSV" button and then load it into the database.
 To run this I use:
@@ -43,6 +44,17 @@ FLASK_DEBUG=1 FLASK_APP=app venv/bin/python -m flask import-rbc-csv ERIC
 There are a list of secrets in the .env.template that correspond to this automation script.
 Understand that this whole feature is very experimental and it fails sometimes.
 The [source code](https://github.com/ericmjalbert/budgeting-bob/blob/master/app/scripts/selenium_import_rbc_csv.py) can be edited to match your specific needs.
+
+### Amazon Order Automations
+
+There exist's a Selenium script that will log into Amazong and web scrap the orders of the setup account to load into the database.
+This data will be used on any transactions from "amazon.ca" (based on transaction description) to be split into one transaction per item in the Amazon order.
+This is used to help better categorize amazon orders which tend to be a catch-all of random items.
+
+This can be run using:
+```
+FLASK_DEBUG=1 FLASK_APP=app venv/bin/python -m flask scrape-amazon-orders
+```
 
 ## Deployment
 
