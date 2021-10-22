@@ -1,11 +1,13 @@
 appnope==0.1.0
 backcall==0.1.0
+backports.zoneinfo==0.2.1
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
 colorama==0.4.4
 configparser==5.0.1
 crayons==0.4.0
+dateparser==1.0.0
 decorator==4.4.1
 Flask==1.1.1
 flask-shell-ipython==0.4.1
@@ -29,11 +31,13 @@ Pygments==2.5.2
 python-dateutil==2.8.1
 python-dotenv==0.10.3
 pytz==2019.3
+regex==2021.9.24
 requests==2.24.0
 selenium==3.141.0
 six==1.14.0
 SQLAlchemy==1.3.13
 traitlets==4.3.3
+tzlocal==3.0
 urllib3==1.25.8
 wcwidth==0.1.8
 webdriver-manager==3.2.2
