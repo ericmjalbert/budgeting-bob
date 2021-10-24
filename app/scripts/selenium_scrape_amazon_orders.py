@@ -207,9 +207,12 @@ def get_book_transaction(driver) -> Transaction:
 
 
 def get_book_item(driver) -> Item:
-    elem = driver.find_element_by_xpath(
-        "//a[contains(@href, 'https://www.amazon.ca/dp/')]"
-    )
+    try:
+        elem = driver.find_element_by_xpath(
+            "//a[contains(@href, 'https://www.amazon.ca/dp/')]"
+        )
+    except NoSuchElementException:
+        return None
     url = elem.get_attribute("href")
     name = elem.text
     price_elem = elem.find_element_by_xpath("./../../../td[contains(text(), 'CDN')]")
@@ -397,7 +400,9 @@ def main():
                 )
             )
             transactions_info.append(book_transaction)
-            items_info.append(get_book_item(driver))
+            book = get_book_item(driver)
+            if book:
+                items_info.append(book)
         else:
             orders_info.append(get_amazon_order(driver))
             transactions_info.extend(get_amazon_transactions(driver))
