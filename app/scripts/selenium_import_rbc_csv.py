@@ -23,14 +23,19 @@ import app  # noqa # pylint: disable=unused-import
 SLEEP_TIME = 1
 
 
-def get_security_questions(owner):
+def get_rbc_creds(owner):
+    username = os.getenv(f"RBC_{owner}")
+    password = os.getenv(f"RBC_{owner}_PASS")
     security_questions = {
         os.getenv(f"RBC_{owner}_Q1"): os.getenv(f"RBC_{owner}_A1"),
         os.getenv(f"RBC_{owner}_Q2"): os.getenv(f"RBC_{owner}_A2"),
         os.getenv(f"RBC_{owner}_Q3"): os.getenv(f"RBC_{owner}_A3"),
     }
-
-    return security_questions
+    return {
+        "username": username,
+        "password": password,
+        "security_questions": security_questions,
+    }
 
 
 def try_click(driver, selenium_func, args):
@@ -38,8 +43,10 @@ def try_click(driver, selenium_func, args):
     try:
         elem = getattr(driver, selenium_func)(args)
         elem.click()
+
     except ElementClickInterceptedException:
         # Try clicking a second time
+        time.sleep(1)
         elem = getattr(driver, selenium_func)(args)
         elem.click()
     except (
@@ -69,25 +76,13 @@ def navigate_rbc_home_page(driver):
     elem.click()
 
 
-def navigate_rbc_login_page(driver, owner):
-    username = os.getenv(f"RBC_{owner}")
-    password = os.getenv(f"RBC_{owner}_PASS")
-    security_questions = get_security_questions(owner)
-
-    # 2. Sign in using environment vars
-    elem = driver.find_element_by_id("K1")
-    elem.send_keys(username)
-    elem = driver.find_element_by_xpath("//input[@type = 'password']")
-    elem.send_keys(password)
-    elem = driver.find_element_by_xpath("//button[@type = 'submit']")
-    elem.click()
-
+def do_security_question_flow(driver, creds):
     # try to enter security_questions answers if they ask
     try:
         time.sleep(2)
         elem = driver.find_element_by_class_name("pvq-label")
         question_text = elem.text
-        answer_to_use = security_questions[question_text]
+        answer_to_use = creds["security_questions"][question_text]
 
         elem = driver.find_element_by_class_name("rbc-input")
         elem.send_keys(answer_to_use)
@@ -115,11 +110,11 @@ def navigate_rbc_login_page(driver, owner):
             question = [
                 dropdown_item.text
                 for dropdown_item in elem.options
-                if dropdown_item.text in security_questions.keys()
+                if dropdown_item.text in creds["security_questions"].keys()
             ][0]
             elem.select_by_visible_text(question)
             elem = driver.find_element_by_id(f"answer{i}")
-            elem.send_keys(security_questions[question])
+            elem.send_keys(creds["security_questions"][question])
 
         elem = driver.find_element_by_id("id_btn_continue")
         elem.click()
@@ -135,18 +130,64 @@ def navigate_rbc_login_page(driver, owner):
         time.sleep(2)
 
 
+def old_sign_in_page(driver, creds):
+
+    # 2. Sign in using environment vars
+    elem = driver.find_element_by_id("K1")
+    elem.send_keys(creds["username"])
+    elem = driver.find_element_by_xpath("//input[@type = 'password']")
+    elem.send_keys(creds["password"])
+    elem = driver.find_element_by_xpath("//button[@type = 'submit']")
+    elem.click()
+
+    do_security_question_flow(driver, creds)
+
+
+def new_sign_in_page(driver, creds):
+    # 2. Sign in using environment vars
+    elem = driver.find_element_by_id("userName")
+    elem.send_keys(creds["username"])
+    elem = driver.find_element_by_id("signinNext")
+    elem.click()
+
+    elem = driver.find_element_by_id("password")
+    elem.send_keys(creds["password"])
+    elem = driver.find_element_by_id("signinNext")
+    elem.click()
+
+    do_security_question_flow(driver, creds)
+
+
+def navigate_rbc_login_page(driver, owner):
+    creds = get_rbc_creds(owner)
+
+    try:
+        old_sign_in_page(driver, creds)
+    except NoSuchElementException:
+        new_sign_in_page(driver, creds)
+
+
 def navigate_rbc_account_summary(driver):
     """Close any modals and click to documents page."""
 
     # close possible modals
     try_click(driver, "find_element_by_id", "modalWindowCloseButton")
-    try_click(driver, "find_element_by_xpath", "//button[@aria-label='Close onboarding modal window']")
+    try_click(
+        driver,
+        "find_element_by_xpath",
+        "//button[@aria-label='Close onboarding modal window']",
+    )
+    try_click(driver, "find_element_by_class_name", "message-bar-close-btn")
 
-    time.sleep(3)
+    time.sleep(2)
 
     # Try clicking on Payment history page
-    try_click(driver, "find_element_by_xpath", "//a[@rbcportalsubmit = 'AS_Payement_History']")
-    try_click(driver, "find_element_by_xpath", "//a[@ga-event-label = 'Account Services']")
+    try_click(
+        driver, "find_element_by_xpath", "//a[@rbcportalsubmit = 'AS_Payement_History']"
+    )
+    try_click(
+        driver, "find_element_by_xpath", "//a[@ga-event-label = 'Account Services']"
+    )
     try_click(driver, "find_element_by_xpath", "//a[@title = 'Download Transactions']")
 
 
