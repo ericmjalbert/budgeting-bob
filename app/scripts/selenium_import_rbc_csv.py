@@ -6,6 +6,7 @@ import click
 
 from selenium import webdriver
 from selenium.common.exceptions import (
+    ElementClickInterceptedException,
     ElementNotInteractableException,
     ElementNotVisibleException,
     NoSuchElementException,
@@ -35,6 +36,10 @@ def get_security_questions(owner):
 def try_click(driver, selenium_func, args):
     """This contains the try-except logic for doing selenium clicks."""
     try:
+        elem = getattr(driver, selenium_func)(args)
+        elem.click()
+    except ElementClickInterceptedException:
+        # Try clicking a second time
         elem = getattr(driver, selenium_func)(args)
         elem.click()
     except (
@@ -137,7 +142,7 @@ def navigate_rbc_account_summary(driver):
     try_click(driver, "find_element_by_id", "modalWindowCloseButton")
     try_click(driver, "find_element_by_xpath", "//button[@aria-label='Close onboarding modal window']")
 
-    time.sleep(2)
+    time.sleep(3)
 
     # Try clicking on Payment history page
     try_click(driver, "find_element_by_xpath", "//a[@rbcportalsubmit = 'AS_Payement_History']")
