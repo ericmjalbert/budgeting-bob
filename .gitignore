@@ -1,7 +1,7 @@
 **/__pycache__/**
 venv/
-.env
-.csv
+*.env
+*.csv
 
 initialize_db.sh
 budgeting-bob.dump

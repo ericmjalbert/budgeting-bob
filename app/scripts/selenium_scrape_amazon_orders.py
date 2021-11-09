@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import math
 import os
 import time
 from typing import List
@@ -409,7 +410,7 @@ def main():
             items_info.extend(get_amazon_items(driver))
 
     orders_df = pd.DataFrame([order.__dict__ for order in orders_info])
-    transactions_df = pd.DataFrame(
+    trans_df = pd.DataFrame(
         [transaction.__dict__ for transaction in transactions_info]
     )
     items_df = pd.DataFrame([item.__dict__ for item in items_info])
@@ -420,7 +421,7 @@ def main():
         .groupby(["shipped_date", "order_id"])
         .transform("sum")["price"]
     )
-    items_df["min_price"] = items_df["pre_tax"].apply(lambda x: round(x, 1))
+    items_df["min_price"] = items_df["pre_tax"].apply(lambda x: round(x * 1))
     items_df["max_price"] = items_df["pre_tax"].apply(lambda x: round(x * CDN_TAX, 1))
 
     items_df["shipped_date_clean"] = items_df["shipped_date"].apply(
@@ -433,17 +434,16 @@ def main():
         items_df["shipped_date_clean"]
     ) + pd.DateOffset(1)
 
-    transactions_df["transaction_price"] = transactions_df["price"].apply(
+    trans_df["transaction_price"] = trans_df["price"].apply(
         lambda x: round(float(x), 1)
     )
-    transactions_df["shipped_date_datetime"] = pd.DatetimeIndex(
-        transactions_df["shipped_date"]
+    trans_df["shipped_date_datetime"] = pd.DatetimeIndex(
+        trans_df["shipped_date"]
     )
 
     # Join logic is:
     #   a. transaction price is between min-max range for the sum of items (min is all no tax, max is all CDN_TAX)
     #   b. shipped_date between transaction and items is within +/- 1 days
-    df_column_cache = items_df.columns.to_list()
     item_columns = [
         "id",
         "name",
@@ -457,12 +457,13 @@ def main():
 
     # remove items that have 0 price.
     items_df = items_df.query("price != 0.00")
+    trans_df = trans_df.query("transaction_price != 0.00")
 
     # To ensure one-to-one joins only we do:
     # 1. rows that are the only item in an order HAVE to match the transaction of that order
     one_to_one_match_rows = (
         items_df.copy()
-        .merge(transactions_df, on="order_id", how="left")
+        .merge(trans_df, on="order_id", how="left")
         .set_index(["id_x", "id_y"])
         .groupby("order_id")
         .transform("count")
@@ -476,17 +477,15 @@ def main():
         .rename(columns={"id_x": "id", "id_y": "transaction_id"})
         .loc[:, item_columns]
     )
-    items_df = (
-        items_df.merge(one_to_one_match_rows, on="id", how="left", suffixes=["", "_y"])
-        .query("name_y.isnull()")
-        .loc[:, df_column_cache]
-    )
+    items_df = items_df[~items_df.id.isin(one_to_one_match_rows.id)]
+    trans_df = trans_df[~trans_df.id.isin(one_to_one_match_rows.transaction_id)]
+
 
     # 2. rows that are an exact match to transaction price and in shipped_date range
     exact_match_to_price = (
         items_df.copy()
         .merge(
-            transactions_df,
+            trans_df,
             left_on=["order_id", "max_price"],
             right_on=["order_id", "transaction_price"],
             how="left",
@@ -500,16 +499,13 @@ def main():
         .loc[:, item_columns]
     )
 
-    items_df = (
-        items_df.merge(exact_match_to_price, on="id", how="left", suffixes=["", "_y"])
-        .query("name_y.isnull()")
-        .loc[:, df_column_cache]
-    )
+    items_df = items_df[~items_df.id.isin(exact_match_to_price.id)]
+    trans_df = trans_df[~trans_df.id.isin(exact_match_to_price.transaction_id)]
 
     # 3. rows that are in price range and shipped_date range
     match_to_both = (
         items_df.copy()
-        .merge(transactions_df, on="order_id", how="inner")
+        .merge(trans_df, on="order_id", how="inner")
         .query("min_price <= transaction_price <= max_price")
         .query("min_shipped_date <= shipped_date_datetime <= max_shipped_date")
         .loc[:, ["id_x", "id_y"]]
@@ -520,16 +516,14 @@ def main():
         .loc[:, item_columns]
     )
 
-    items_df = (
-        items_df.merge(match_to_both, on="id", how="left", suffixes=["", "_y"])
-        .query("name_y.isnull()")
-        .loc[:, df_column_cache]
-    )
+    items_df = items_df[~items_df.id.isin(match_to_both.id)]
+    trans_df = trans_df[~trans_df.id.isin(match_to_both.transaction_id)]
+
 
     # 4. rows that are just in price range
     match_to_price_range = (
         items_df.copy()
-        .merge(transactions_df, on="order_id", how="inner")
+        .merge(trans_df, on="order_id", how="inner")
         .query("min_price <= transaction_price <= max_price")
         .loc[:, ["id_x", "id_y"]]
         .merge(items_df, left_on="id_x", right_on="id", how="right")
@@ -538,18 +532,31 @@ def main():
         .rename(columns={"id_y": "transaction_id"})
         .loc[:, item_columns]
     )
+    items_df = items_df[~items_df.id.isin(match_to_price_range.id)]
+    trans_df = trans_df[~trans_df.id.isin(match_to_price_range.transaction_id)]
 
-    items_df = (
-        items_df.merge(match_to_price_range, on="id", how="left", suffixes=["", "_y"])
-        .query("name_y.isnull()")
-        .loc[:, df_column_cache]
+
+    # 5. Allow for rounding errors in price match
+    match_to_price_range_no_decimal = (
+        items_df.copy()
+        .merge(trans_df, on="order_id", how="inner")
+        .query("min_price*0.99 <= transaction_price <= max_price*1.01")
+        .loc[:, ["id_x", "id_y"]]
+        .merge(items_df, left_on="id_x", right_on="id", how="right")
+        .dropna(subset=["id_x"])
+        .drop(columns=["transaction_id"])
+        .rename(columns={"id_y": "transaction_id"})
+        .loc[:, item_columns]
     )
+    items_df = items_df[~items_df.id.isin(match_to_price_range_no_decimal.id)]
+    trans_df = trans_df[~trans_df.id.isin(match_to_price_range_no_decimal.transaction_id)]
 
-    # 5. Ignore the groupby shipping date for remaining transactions
+
+    # 6. Ignore the groupby shipping date for remaining transactions
     items_df["taxed_price"] = items_df["price"].apply(lambda x: round(x * CDN_TAX, 1))
     ignore_groupped_price = (
         items_df.copy()
-        .merge(transactions_df, on="order_id", how="inner")
+        .merge(trans_df, on="order_id", how="inner")
         .query("taxed_price == transaction_price")
         .loc[:, ["id_x", "id_y"]]
         .merge(
@@ -559,15 +566,11 @@ def main():
         .rename(columns={"id_x": "id", "id_y": "transaction_id"})
         .loc[:, item_columns]
     )
-
-    items_df = (
-        items_df.merge(ignore_groupped_price, on="id", how="left", suffixes=["", "_y"])
-        .query("name_y.isnull()")
-        .loc[:, df_column_cache]
-    )
+    items_df = items_df[~items_df.id.isin(ignore_groupped_price.id)]
+    trans_df = trans_df[~trans_df.id.isin(ignore_groupped_price.transaction_id)]
 
     # TODO
-    # 6. If there is one remaining, match it to transaction; otherwise leave them unknown
+    # 7. If there is one remaining, match it to transaction; otherwise leave them unknown
     # only_one_remaining = ()
 
     full_items_df = pd.concat(
@@ -576,6 +579,7 @@ def main():
             exact_match_to_price,
             match_to_both,
             match_to_price_range,
+            match_to_price_range_no_decimal,
             ignore_groupped_price,
             # only_one_remaining,
         ]
@@ -585,7 +589,7 @@ def main():
     # Write the dataframes to the postgres database
     write_df_to_database(orders_df, "amazon_orders")
     write_df_to_database(
-        transactions_df[["id", "shipped_date", "price", "order_id"]],
+        trans_df[["id", "shipped_date", "price", "order_id"]],
         "amazon_transactions",
     )
     write_df_to_database(full_items_df, "amazon_items")
