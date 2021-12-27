@@ -79,12 +79,12 @@ def navigate_rbc_home_page(driver):
 def do_security_question_flow(driver, creds):
     # try to enter security_questions answers if they ask
     try:
-        time.sleep(2)
+        time.sleep(4)
         elem = driver.find_element_by_class_name("pvq-label")
         question_text = elem.text
         answer_to_use = creds["security_questions"][question_text]
 
-        elem = driver.find_element_by_class_name("rbc-input")
+        elem = driver.find_element_by_id("pvqQInput")
         elem.send_keys(answer_to_use)
         time.sleep(1)
 
@@ -140,22 +140,21 @@ def old_sign_in_page(driver, creds):
     elem = driver.find_element_by_xpath("//button[@type = 'submit']")
     elem.click()
 
-    do_security_question_flow(driver, creds)
-
 
 def new_sign_in_page(driver, creds):
     # 2. Sign in using environment vars
+    time.sleep(4)
+
     elem = driver.find_element_by_id("userName")
     elem.send_keys(creds["username"])
     elem = driver.find_element_by_id("signinNext")
-    elem.click()
+    driver.execute_script("arguments[0].click();", elem)
 
+    time.sleep(4)
     elem = driver.find_element_by_id("password")
     elem.send_keys(creds["password"])
     elem = driver.find_element_by_id("signinNext")
-    elem.click()
-
-    do_security_question_flow(driver, creds)
+    driver.execute_script("arguments[0].click();", elem)
 
 
 def navigate_rbc_login_page(driver, owner):
@@ -165,6 +164,8 @@ def navigate_rbc_login_page(driver, owner):
         old_sign_in_page(driver, creds)
     except NoSuchElementException:
         new_sign_in_page(driver, creds)
+
+    do_security_question_flow(driver, creds)
 
 
 def navigate_rbc_account_summary(driver):
@@ -188,7 +189,10 @@ def navigate_rbc_account_summary(driver):
     try_click(
         driver, "find_element_by_xpath", "//a[@ga-event-label = 'Account Services']"
     )
+
+    # one of these will have to work
     try_click(driver, "find_element_by_xpath", "//a[@title = 'Download Transactions']")
+    try_click(driver, "find_element_by_xpath", "//a[@data-dig-id= 'OLB_PMSM_672']")
 
 
 def navigate_rbc_download_page(driver):
