@@ -8,7 +8,6 @@ from . import home
 from . import transactions
 from . import upload_statements
 
-from .scripts import rbc_csv_to_psql
 from .scripts import selenium_import_rbc_csv
 from .scripts import selenium_scrape_amazon_orders
 
@@ -25,7 +24,6 @@ def create_app(test_config=None):
     app.register_blueprint(transactions.bp)
     app.register_blueprint(upload_statements.bp)
 
-    app.cli.add_command(rbc_csv_to_psql.run_all)
     app.cli.add_command(selenium_import_rbc_csv.main)
     app.cli.add_command(selenium_scrape_amazon_orders.main)
 
