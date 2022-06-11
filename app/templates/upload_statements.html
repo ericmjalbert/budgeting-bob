@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Statements{% endblock %}
+
+{% block header %}
+<script type='text/javascript' src='static/js/upload_statements.js'></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="card mb3" style="margin-top: 20pt">
+  <div class="card-body">
+    <h5 class="card-title">How to get RBC statements:</h5>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">
+        This script finds the latest downloaded CSV in the repo root folder and
+        imports it into PSQL.
+
+        To download the  needed CSV log into RBC's web portal and go to:
+        <ol>
+          <li>Sign in to RBC account</li>
+          <li>Ctrl+f for "Account Services"</li>
+          <li>Ctrl+f for "Download Transactions"</li>
+          <li>Click the "Comma Delimited ...." radio button</li>
+
+          <li>Click on the bottom drop down and select: "All transactions on File"</li>
+          <li>Continue</li>
+          <li>Take Downloaded CSV file and upload it here</li>
+        </ol> 
+      </li>
+    </ul>
+  </div>
+
+
+  <div class="card-body">
+    <h3 class="card-title">
+      Click here to upload a single statement file:
+    </h3>
+
+    <form method="POST" action="upload_statements" enctype="multipart/form-data">
+      <label for="csv">Select a file:</label>
+      <input type="file" name="csv" accept=".csv">
+      <input type="submit" id="submit-csv">
+    </form>
+
+    {% if filename and rows_written == 0 %}
+    <samp>
+      Processed {{ filename }}:
+      No new transactions to write to database.
+    </samp>
+    {% elif filename and rows_written > 0 %}
+    <samp>
+      Processed {{ filename }}:
+      Written {{ rows_written }} rows to Database.
+    </samp>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
