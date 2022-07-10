@@ -61,7 +61,7 @@ def transactions():
         )
         table_rows = db.fetchall()
 
-        db.execute("SELECT category FROM public.categories ORDER BY category")
+        db.execute("SELECT category FROM public.categories_new ORDER BY category")
         category_names = db.fetchall()
 
     available_months = get_available_months()
