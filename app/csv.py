@@ -68,7 +68,10 @@ def apply_existing_categories(original_df):
                 SELECT DISTINCT
                     description_1,
                     FIRST_VALUE(category)
-                        OVER (PARTITION BY description_1 ORDER BY updated) AS category
+                        OVER (
+                            ORDER BY transaction_date DESC
+                            ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+                        ) AS category
                 FROM public.transactions
                 WHERE category IS NOT NULL
                 """,
