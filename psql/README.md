@@ -26,9 +26,19 @@ flyctl postgres connect -f psql/create_tables.sql
 flyctl postgres connect -f psql/create_views.sql
 ```
 
+For initializing the production data: copy the `setup_dev_dummy_data.sql` insert queryies and write yourself a `setup_prd_data.sql` that inserts the sensitive information.
+This should also be run manually.
+
 ## Local database
 
 For local development, we create a new docker database and populate it with the dummy data.
 This is automatically setup when docker-compose is used.
-It uses the same `create_*.sql` files but also runs the `psql/fill_dummy_transactions.sql` script to do inserts for dummy transactions.
+It uses the same `create_*.sql` files but also runs the `psql/copy_dev_transactions.sql` script to do inserts for dev transactions.
 
+The CSV data is generated from the `generate_dev_data.sql` script.
+Running the SQL from that script manually on the production `budgeting-bill-psql` server will create a CSV file that is on the server machine.
+This CSV can be SFTP'd back into local machine (and then commited into the repo) with:
+```
+flyctl ssh sftp shell
+get dev_data.csv
+```

@@ -24,14 +24,14 @@ services:
       - db:/var/lib/postgresql/data
 
       # copy the sql script to create tables
-      - ./psql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - ./psql/create_tables.sql:/docker-entrypoint-initdb.d/1_create_tables.sql
 
       # copy the sql script to create views
-      - ./psql/create_views.sql:/docker-entrypoint-initdb.d/create_views.sql
+      - ./psql/create_views.sql:/docker-entrypoint-initdb.d/2_create_views.sql
 
       # copy the sql script to fill tables with dummy data
-      - ./psql/fill_dummy_transactions.sql:/docker-entrypoint-initdb.d/fill_dummy_transactions.sql
-      - ./psql/demo_data.csv:/opt/demo_data.csv
+      - ./psql/setup_dev_dummy_data.sql:/docker-entrypoint-initdb.d/3_setup_dev_dummy_data.sql
+      - ./psql/dev_data.csv:/opt/dev_data.csv
 
 volumes:
   db:
