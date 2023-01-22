@@ -1,0 +1,19 @@
+app = "budgeting-bill"
+
+[build]
+  # image = "ericmjalbert/budgeting-bob:latest"
+  dockerfile = "Dockerfile"
+
+
+[[services]]
+  internal_port = 5000
+  protocol = "tcp"
+
+[[services.ports]]
+  handlers = ["http"]
+  port = 80
+  force_https = true
+
+[[services.ports]]
+  handlers = ["tls", "http"]
+  port = "443"

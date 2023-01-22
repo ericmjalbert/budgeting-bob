@@ -1,7 +1,9 @@
 from io import StringIO
 
 from flask import Blueprint, render_template, redirect, request, url_for
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
+from werkzeug.datastructures import  FileStorage
+
 
 from .auth import login_required
 from .csv import rbc_statement_parser

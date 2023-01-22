@@ -1,9 +1,4 @@
-#!/bin/bash
-
-PSQL="heroku pg:psql --app budgeting-bob"
-PSQL_DEMO="heroku pg:psql --app budgeting-bob-demo"
-
-$PSQL -c "
+-- This changes all the transaction data to be random and a bit anonlymized. 
 CREATE TABLE IF NOT EXISTS demo_data AS 
 WITH account_number_mapper AS (
     SELECT
@@ -41,40 +36,14 @@ INNER JOIN account_number_mapper AS anm
     ON account_number = anm.number
 WHERE transaction_date > '2019-11-01'
     AND category != 'transfer_between_accounts'
-"
+;
 
-$PSQL -c '\copy public.demo_data TO 'demo_data.csv' csv header'
 
-$PSQL -c "
+-- The anonlymized demo transactions are copied.
+-- In Fly.io this is sent to the `/` folder of the running VM. We can get this 
+-- with `flyctl ssh sftp shell` to bring it to local machine.
+\copy public.demo_data TO 'demo_data.csv' csv header;
+
+
+-- clean up prod DB
 DROP TABLE public.demo_data;
-"
-
-$PSQL_DEMO -c "
-DROP TABLE public.transactions;
-"
-
-$PSQL_DEMO -c "
-CREATE TABLE IF NOT EXISTS public.transactions (
-    id TEXT,
-    account_type TEXT,
-    account_number TEXT,
-    transaction_date TIMESTAMP WITHOUT TIME ZONE,
-    category TEXT,
-    value FLOAT,
-    description_1 TEXT,
-    description_2 TEXT,
-    created TIMESTAMP WITHOUT TIME ZONE,
-    updated TIMESTAMP WITHOUT TIME ZONE
-)
-"
-
-$PSQL_DEMO -c '\copy public.transactions FROM 'demo_data.csv' WITH (FORMAT csv, HEADER);'
-
-$PSQL_DEMO -c "
-UPDATE public.transactions
-SET created = transaction_date,
-    updated = transaction_date,
-    description_1 = 'Just ' || category || ' stuff'
-"
-
-rm demo_data.csv

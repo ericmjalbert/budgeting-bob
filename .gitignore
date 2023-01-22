@@ -5,3 +5,6 @@ venv/
 
 initialize_db.sh
 budgeting-bob.dump
+
+## Sensitve Inserts
+psql/*prd*.sql

@@ -1,0 +1,6 @@
+Flask==2.1.0
+SQLAlchemy==1.4.44
+gunicorn==19.9.0
+pandas==1.5.1
+psycopg2-binary==2.8.4
+python-dotenv==0.21.0

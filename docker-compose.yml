@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: budgeting-bill
+    build: ./
+    ports:
+      - '5000:5000'
+    environment:
+      - DATABASE_URL=postgresql://postgres:secretPass123@budgeting-bill-psql:5432
+
+  db:
+    container_name: budgeting-bill-psql
+    image: postgres:14.4-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secretPass123
+    ports:
+      - '5432:5432'
+    volumes: 
+      - db:/var/lib/postgresql/data
+
+      # copy the sql script to create tables
+      - ./psql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+
+      # copy the sql script to create views
+      - ./psql/create_views.sql:/docker-entrypoint-initdb.d/create_views.sql
+
+      # copy the sql script to fill tables with dummy data
+      - ./psql/fill_dummy_transactions.sql:/docker-entrypoint-initdb.d/fill_dummy_transactions.sql
+      - ./psql/demo_data.csv:/opt/demo_data.csv
+
+volumes:
+  db:
+    driver: local

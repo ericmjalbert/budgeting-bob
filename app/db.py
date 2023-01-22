@@ -12,7 +12,7 @@ class Database:
 
     def __enter__(self):
         self.conn = psycopg2.connect(
-            current_app.config["DATABASE_URL"], sslmode="require"
+            current_app.config["DATABASE_URL"], sslmode="allow"
         )
         self.cursor = self.conn.cursor(cursor_factory=RealDictCursor)
         return self.cursor
