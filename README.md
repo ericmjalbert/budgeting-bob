@@ -11,7 +11,7 @@ EDIT: The above demo doesn't work anymore since heroku changed their stance on f
 
 Create a virtualenv named `venv` and then `pip install -r requirements.txt`.
 
-## Usage
+## Local Usage
 
 To run the webapp locally, use docker-compose:
 ```bash
@@ -19,13 +19,13 @@ docker-compose build
 docker-compose up --force-recreate
 ```
 
-To restart the database, you need to have the local volume deleted:
+This will start-up the app and a local postgres database (with some initialized dummy data). To restart the database, you need to have the local volume deleted:
 ```bash
 docker-compose down -v
 ```
 
-To actually do activites locally, you need to register a user named `admin_jalbert`.
-Going to the `/register` URL will allow you to register a user, the password can be simple here since it'll just be for local work.
+The local docker doesn't have any user authentication, this is activated with `LOCAL_MODE=true` and it skips the user session logic from Flask.
+Logging in and Registering a user can still be access (by directly going to `/login` and `/register`), but is not needed for the local usage.
 
 
 ## User Access

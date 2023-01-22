@@ -7,7 +7,9 @@ services:
     ports:
       - '5000:5000'
     environment:
-      - DATABASE_URL=postgresql://postgres:secretPass123@budgeting-bill-psql:5432
+      - DATABASE_URL=postgresql://postgres:password123@budgeting-bill-psql:5432
+      - LOCAL_MODE=true
+      - PYTHONUNBUFFERED=1
 
   db:
     container_name: budgeting-bill-psql
@@ -15,7 +17,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secretPass123
+      - POSTGRES_PASSWORD=password123
     ports:
       - '5432:5432'
     volumes: 

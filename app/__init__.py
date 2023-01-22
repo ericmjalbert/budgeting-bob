@@ -1,4 +1,6 @@
 import os
+import random
+
 from flask import Flask
 
 from . import account_totals
@@ -13,7 +15,13 @@ def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
 
-    app.config.from_mapping(SECRET_KEY="dev", DATABASE_URL=os.environ["DATABASE_URL"])
+    random_secret_key = '%030x' % random.randrange(16**30)
+    secret_key = "dev" if os.getenv("LOCAL_MODE") else random_secret_key
+
+    app.config.from_mapping(
+        SECRET_KEY=secret_key,
+        DATABASE_URL=os.environ["DATABASE_URL"],
+    )
 
     app.register_blueprint(account_totals.bp)
     app.register_blueprint(auth.bp)

@@ -1,4 +1,6 @@
 import functools
+import os
+
 from flask import (
     Blueprint,
     flash,
@@ -78,6 +80,12 @@ def login():
             session["user_id"] = user["id"]
             return redirect(url_for("home.home"))
 
+        # Use a dummy id for LOCAL_MODE
+        if os.getenv("LOCAL_MODE"):
+            session.clear()
+            session["user_id"] = '9999'
+            return redirect(url_for("home.home"))
+
         flash(error)
 
     return render_template("auth/login.html")
@@ -96,7 +104,9 @@ def load_logged_in_user():
                 user = db.fetchone()["username"]
                 g.user = user
             except TypeError:
-                g.user = None
+                # Load a dummy user if it's in Local Mode
+                # otherwise correctly identify as "not logged in"
+                g.user = None if not os.getenv("LOCAL_MODE") else '9999'
 
 
 def login_required(view):
