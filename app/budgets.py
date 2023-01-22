@@ -60,6 +60,8 @@ def save_new_category():
     category = request.args.get("category").lower().strip()
     new_value = request.args.get("new_value")
 
+    current_month = get_current_month()
+
     # get category_id of the category
     with Database() as db:
         sql = f"SELECT id FROM public.categories_new WHERE category = '{category}'"
@@ -71,7 +73,7 @@ def save_new_category():
         sql = f"""
             SELECT *
             FROM public.budgets
-            WHERE updated_month = '{CURRENT_MONTH}'
+            WHERE updated_month = '{current_month}'
                 AND category_id = '{category_id}'
         """
         db.execute(sql)
@@ -84,7 +86,7 @@ def save_new_category():
                 UPDATE public.budgets
                 SET budget = {new_value}
                 WHERE category_id = {category_id}
-                    AND updated_month = '{CURRENT_MONTH}';
+                    AND updated_month = '{current_month}';
             """
             db.execute(sql)
 
@@ -92,11 +94,11 @@ def save_new_category():
         else:
             sql = f"""
                 INSERT INTO public.budgets (category_id, budget, updated_month)
-                VALUES ({category_id}, {new_value}, '{CURRENT_MONTH}')
+                VALUES ({category_id}, {new_value}, '{current_month}')
             """
             db.execute(sql)
 
-    selected_month = request.args.get("selected_month") or CURRENT_MONTH
+    selected_month = request.args.get("selected_month") or current_month
     return calculate_new_values(category, selected_month)
 
 
