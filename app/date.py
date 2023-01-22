@@ -1,6 +1,9 @@
 from datetime import date, datetime, timedelta
 
-CURRENT_MONTH = datetime.now().replace(day=1).strftime("%Y-%m-%d")
+
+def get_current_month() -> str:
+    """Get the current month as  YYYY-MM-DD format string."""
+    return datetime.now().replace(day=1).strftime("%Y-%m-%d")
 
 
 def get_available_months(starting_month=date(2020, 1, 1)):

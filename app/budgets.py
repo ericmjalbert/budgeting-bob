@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import Blueprint, jsonify, render_template, request
 
 from .auth import login_required
-from .date import CURRENT_MONTH, get_available_months
+from .date import get_available_months, get_current_month
 from .db import Database
 
 
@@ -12,7 +12,7 @@ bp = Blueprint("budgets", __name__)
 @bp.route("/budgets")
 @login_required
 def budgets():
-    selected_month = request.args.get("selected_month") or CURRENT_MONTH
+    selected_month = request.args.get("selected_month") or get_current_month()
 
     with Database() as db:
         db.execute(
