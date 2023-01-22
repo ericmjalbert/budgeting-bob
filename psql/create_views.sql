@@ -30,28 +30,14 @@ FROM monthly_budget
 CREATE VIEW public.monthly_spend
 AS
 
-WITH all_spends AS (
-    SELECT
-        category,
-        DATE_TRUNC('month', transaction_date) AS spend_month,
-        -1 * value as value
-    FROM public.transactions
-    UNION ALL SELECT
-        category,
-        DATE_TRUNC('month', shipped_date::timestamp) AS spend_month,
-        quantity * price AS value
-    FROM public.amazon_items
-    WHERE shipped_date NOT LIKE 'Not delivered %'
-)
-
 SELECT
     mb.category,
     mb.month,
-    COALESCE(SUM(all_spends.value), 0) AS spend
+    COALESCE(SUM(-1 * transactions.value), 0) AS spend
 FROM public.monthly_budget AS mb
-LEFT JOIN all_spends
-    ON all_spends.category = mb.category
-    AND all_spends.spend_month = mb.month
+LEFT JOIN public.transactions
+    ON transactions.category = mb.category
+    AND DATE_TRUNC('month', transactions.transaction_date) = mb.month
 GROUP BY 1, 2
 ;
 

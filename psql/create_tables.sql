@@ -90,37 +90,3 @@ CREATE TABLE IF NOT EXISTS public.accounts (
     source_of_truth TEXT
 )
 ;
-
-
---- These are the deprecated amazon items
-CREATE TABLE IF NOT EXISTS public.amazon_items (
-    id TEXT,
-    name TEXT,
-    url TEXT,
-    shipped_date TEXT,
-    price FLOAT,
-    quantity BIGINT,
-    transaction_id TEXT,
-    order_id TEXT,
-    category TEXT,
-    new_id TEXT 
-)
-;
-
-CREATE TABLE IF NOT EXISTS public.amazon_transactions (
-    id TEXT,
-    shipped_date TEXT,
-    price TEXT,
-    order_id TEXT
-)
-;
-
-CREATE TABLE IF NOT EXISTS public.amazon_orders (
-    id TEXT,
-    url TEXT,
-    ordered_date TEXT,
-    grand_total TEXT,
-    total_before_tax FLOAT,
-    tax FLOAT
-)
-;

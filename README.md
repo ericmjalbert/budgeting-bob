@@ -13,10 +13,20 @@ Create a virtualenv named `venv` and then `pip install -r requirements.txt`.
 
 ## Usage
 
-To run the webapp locally:
+To run the webapp locally, use docker-compose:
 ```bash
-FLASK_DEBUG=1 FLASK_APP=app venv/bin/python -m flask run
+docker-compose build
+docker-compose up --force-recreate
 ```
+
+To restart the database, you need to have the local volume deleted:
+```bash
+docker-compose down -v
+```
+
+To actually do activites locally, you need to register a user named `admin_jalbert`.
+Going to the `/register` URL will allow you to register a user, the password can be simple here since it'll just be for local work.
+
 
 ## User Access
 

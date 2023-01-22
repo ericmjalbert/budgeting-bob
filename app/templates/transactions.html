@@ -54,57 +54,26 @@
   <tbody>
     {% for row in rows %}
     <tr>
-      <!-- This row is an amazon item -->
-      {% if row["amazon_item_id"] %}
-        <td class="id-value" style="display:none;">{{ row["amazon_item_id"] }}</td>
-        <td>{{ row["account_alias"]|capitalize }}</td>
-        <td>{{ row["transaction_date"] }}</td>
-        <td>{{ row["value"] }}</td>
-        <td>{{ row["quantity"] }}x
-          <a href="{{ row["url"] }}" title="{{ row["name"] }}">
-            {{ row["name"]|truncate(60) }}
-          </a>
-        </td>
-        <td class="category">
-          <select class="custom-select category-save" id="category">
-            <option disabled selected value> None </option>
-            {% for val in categories %}
-            <option value="{{ val["category"] }}"
-              {%- if val["category"] == row["amazon_item_category"] %} selected {% endif -%}
-              > {{ val["category"]|capitalize }} </option>
-            {% endfor %}
-          </select>
-        </td>
-        <td>
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary save" type="button">Save</button>
-          </div>
-        </td>
-
-      <!-- This row is a non-amazon item -->
-      {% else %}
-        <td class="id-value" style="display:none;">{{ row["id"] }}</td>
-        <td>{{ row["account_alias"]|capitalize }}</td>
-        <td>{{ row["transaction_date"] }}</td>
-        <td>{{ row["value"] }}</td>
-        <td> {{ row["description"] }}</td>
-        <td class="category">
-          <select class="custom-select category-save" id="category">
-            <option disabled selected value> None </option>
-            {% for val in categories %}
-            <option value="{{ val["category"] }}"
-              {%- if val["category"] == row["category"] %} selected {% endif -%}
-              > {{ val["category"]|capitalize }} </option>
-            {% endfor %}
-          </select>
-        </td>
-        <td>
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary save" type="button">Save</button>
-          </div>
-        </td>
-
-      {% endif %}
+      <td class="id-value" style="display:none;">{{ row["id"] }}</td>
+      <td>{{ row["account_alias"]|capitalize }}</td>
+      <td>{{ row["transaction_date"] }}</td>
+      <td>{{ row["value"] }}</td>
+      <td> {{ row["description"] }}</td>
+      <td class="category">
+        <select class="custom-select category-save" id="category">
+          <option disabled selected value> None </option>
+          {% for val in categories %}
+          <option value="{{ val["category"] }}"
+            {%- if val["category"] == row["category"] %} selected {% endif -%}
+            > {{ val["category"]|capitalize }} </option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+        <div class="input-group-append">
+          <button class="btn btn-outline-secondary save" type="button">Save</button>
+        </div>
+      </td>
     </tr>
     {% endfor %}
 
