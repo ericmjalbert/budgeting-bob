@@ -69,6 +69,7 @@ def apply_existing_categories(original_df):
                     description_1,
                     FIRST_VALUE(category)
                         OVER (
+                            PARTITION BY description_1
                             ORDER BY transaction_date DESC
                             ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
                         ) AS category
