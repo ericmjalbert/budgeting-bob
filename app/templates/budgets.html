@@ -27,7 +27,30 @@
         <th style="width: 16.25%" scope="col">Category</th>
         <th style="width: 30%" scope="col">Monthly Budget</th>
         <th style="width: 16.25%" scope="col">Remaining Amount</th>
-        <th style="width: 16.25%" scope="col">Overall Overage</th>
+        <th style="width: 16.25%; display: none" scope="col" class="overage all">
+          Overage All
+          <button type="button" class="btn btn-info btn-sm">
+          <i class="fa fa-calendar-week"></i>
+          </button>
+        </th>
+        <th style="width: 16.25%; display: none" scope="col" class="overage 6m">
+          Overage 6m
+          <button type="button" class="btn btn-info btn-sm">
+          <i class="fa fa-calendar-week"></i>
+          </button>
+        </th>
+        <th style="width: 16.25%" scope="col" class="overage 12m shown">
+          Overage 1y
+          <button type="button" class="btn btn-info btn-sm">
+          <i class="fa fa-calendar-week"></i>
+          </button>
+        </th>
+        <th style="width: 16.25%; display: none" scope="col" class="overage 24m">
+          Overage 2y
+          <button type="button" class="btn btn-info btn-sm">
+          <i class="fa fa-calendar-week"></i>
+          </button>
+        </th>
         <th style="width: 21.25%" scope="col">Status</th>
       </tr>
     </thead>
@@ -37,7 +60,10 @@
         <td>Total</td>
         <td>{{ total["budget"] }}</td>
         <td>{{ total["remaining"] }}</td>
-        <td>{{ total["overage"] }}</td>
+        <td class="overage all" style="display: none">{{ total["overage"] }}</td>
+        <td class="overage 6m" style="display: none">{{ total["overage_6m"] }}</td>
+        <td class="overage 12m">{{ total["overage_12m"] }}</td>
+        <td class="overage 24m" style="display: none">{{ total["overage_24m"] }}</td>
         <td></td>
       </tr>
       {% for row in rows %}
@@ -56,7 +82,10 @@
           </div>
         </td>
         <td class="align-middle">{{ row["remaining"] }}</td>
-        <td class="align-middle">{{ row["overage"] }}</td>
+        <td class="align-middle overage all" style="display: none">{{ row["overage"] }}</td>
+        <td class="align-middle overage 6m" style="display: none">{{ row["overage_6m"] }}</td>
+        <td class="align-middle overage 12m">{{ row["overage_12m"] }}</td>
+        <td class="align-middle overage 24m" style="display: none">{{ row["overage_24m"] }}</td>
         <td class="align-middle">{{ row["status"] }}</td>
       </tr>
       {% endfor %}

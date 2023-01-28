@@ -43,25 +43,31 @@ GROUP BY 1, 2
 
 
 ---------
-CREATE VIEW public.cumulative_budget
+CREATE OR REPLACE VIEW public.cumulative_budget
 AS
 
 SELECT
     category,
     month,
-    SUM(budget) OVER (PARTITION BY category ORDER BY month) AS budget
+    SUM(budget) OVER (PARTITION BY category ORDER BY month) AS budget,
+    SUM(budget) OVER (PARTITION BY category ORDER BY month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS budget_6m,
+    SUM(budget) OVER (PARTITION BY category ORDER BY month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS budget_12m,
+    SUM(budget) OVER (PARTITION BY category ORDER BY month ROWS BETWEEN 24 PRECEDING AND CURRENT ROW) AS budget_24m
 FROM public.monthly_budget
 ;
 
 
 ---------
-CREATE VIEW public.cumulative_spend
+CREATE OR REPLACE VIEW public.cumulative_spend
 AS
 
 SELECT
     category,
     month,
-    SUM(spend) OVER (PARTITION BY category ORDER BY month) AS spend
+    SUM(spend) OVER (PARTITION BY category ORDER BY month) AS spend,
+    SUM(spend) OVER (PARTITION BY category ORDER BY month ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS spend_6m,
+    SUM(spend) OVER (PARTITION BY category ORDER BY month ROWS BETWEEN 12 PRECEDING AND CURRENT ROW) AS spend_12m,
+    SUM(spend) OVER (PARTITION BY category ORDER BY month ROWS BETWEEN 24 PRECEDING AND CURRENT ROW) AS spend_24m
 FROM public.monthly_spend
 ;
 

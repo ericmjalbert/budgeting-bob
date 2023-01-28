@@ -9,11 +9,7 @@ from .db import Database
 bp = Blueprint("budgets", __name__)
 
 
-@bp.route("/budgets")
-@login_required
-def budgets():
-    selected_month = request.args.get("selected_month") or get_current_month()
-
+def budgets_query(selected_month):
     with Database() as db:
         db.execute(
             f"""
@@ -22,6 +18,9 @@ def budgets():
                 ROUND(mr.budget::NUMERIC, 2) AS budget,
                 ROUND(mr.remaining::NUMERIC, 2) AS remaining,
                 ROUND((cb.budget - cs.spend)::NUMERIC, 2) AS overage,
+                ROUND((cb.budget_6m - cs.spend_6m)::NUMERIC, 2) AS overage_6m,
+                ROUND((cb.budget_12m - cs.spend_12m)::NUMERIC, 2) AS overage_12m,
+                ROUND((cb.budget_24m - cs.spend_24m)::NUMERIC, 2) AS overage_24m,
                 COALESCE(mr.status, 'Under Budget') AS status,
                 COALESCE(mr.status_class, 'table-success') AS status_class
             FROM public.cumulative_budget AS cb
@@ -40,14 +39,27 @@ def budgets():
             "budget": sum([row["budget"] for row in budget_rows]),
             "remaining": sum([row["remaining"] for row in budget_rows]),
             "overage": sum([row["overage"] for row in budget_rows]),
+            "overage_6m": sum([row["overage_6m"] for row in budget_rows]),
+            "overage_12m": sum([row["overage_12m"] for row in budget_rows]),
+            "overage_24m": sum([row["overage_24m"] for row in budget_rows]),
         }
+
+    return {"rows": budget_rows, "total": total}
+
+
+@bp.route("/budgets")
+@login_required
+def budgets():
+    selected_month = request.args.get("selected_month") or get_current_month()
+
+    budget_results = budgets_query(selected_month)
 
     available_months = get_available_months()
 
     return render_template(
         "budgets.html",
-        rows=budget_rows,
-        total=total,
+        rows=budget_results["rows"],
+        total=budget_results["total"],
         months=available_months,
         selected_month=datetime.strptime(selected_month, "%Y-%m-%d"),
     )
@@ -105,41 +117,30 @@ def save_new_category():
 def calculate_new_values(category, selected_month):
     """Recalculates the budget summary row as a result of the updated budget."""
 
-    with Database() as db:
-        sql = f"""
-            SELECT
-                cb.category,
-                ROUND(mr.budget::NUMERIC, 2) AS budget,
-                ROUND(mr.remaining::NUMERIC, 2) AS remaining,
-                ROUND((cb.budget - cs.spend)::NUMERIC, 2) AS overage,
-                COALESCE(mr.status, 'Under Budget') AS status,
-                COALESCE(mr.status_class, 'table-success') AS status_class
-            FROM public.cumulative_budget AS cb
-            LEFT JOIN public.cumulative_spend AS cs
-                USING (category, month)
-            LEFT JOIN public.monthly_remaining AS mr
-                USING (category, month)
-            WHERE month = '{selected_month}'
-                AND mr.budget IS NOT NULL
-        """
-        db.execute(sql)
-        budget_rows = db.fetchall()
-        rows = {
-            row["category"]: {
-                "budget": float(row["budget"]),
-                "remaining": float(row["remaining"]),
-                "overage": float(row["overage"]),
-                "status": row["status"],
-                "status_class": row["status_class"],
-            }
-            for row in budget_rows
-        }
+    budget_results = budgets_query(selected_month)
 
-        total = {
-            "budget": float(sum([row["budget"] for row in budget_rows])),
-            "remaining": float(sum([row["remaining"] for row in budget_rows])),
-            "overage": float(sum([row["overage"] for row in budget_rows])),
+    rows = {
+        row["category"]: {
+            "budget": float(row["budget"]),
+            "remaining": float(row["remaining"]),
+            "overage": float(row["overage"]),
+            "overage_6m": float(row["overage_6m"]),
+            "overage_12m": float(row["overage_12m"]),
+            "overage_24m": float(row["overage_24m"]),
+            "status": row["status"],
+            "status_class": row["status_class"],
         }
+        for row in budget_results["rows"]
+    }
+
+    total = {
+        "budget": float(sum([row["budget"] for row in budget_results["rows"]])),
+        "remaining": float(sum([row["remaining"] for row in budget_results["rows"]])),
+        "overage": float(sum([row["overage"] for row in budget_results["rows"]])),
+        "overage_6m": float(sum([row["overage_6m"] for row in budget_results["rows"]])),
+        "overage_12m": float(sum([row["overage_12m"] for row in budget_results["rows"]])),
+        "overage_24m": float(sum([row["overage_24m"] for row in budget_results["rows"]])),
+    }
 
     print({"total": total, "budget_rows": rows})
     return jsonify({"total": total, "budget_rows": rows})

@@ -89,9 +89,35 @@ function editBudgetMode() {
 }
 
 
+function cycleOverage() {
+  if ($('th.overage.shown').first().hasClass('all')) {
+    $('.overage.all').css('display', 'none');
+    $('th.overage.all').removeClass('shown');
+    $('.overage.6m[style*="display: none"]').css('display', '');
+    $('th.overage.6m').addClass('shown');
+  } else if ($('th.overage.shown').first().hasClass('6m')) {
+    $('.overage.6m').css('display', 'none');
+    $('th.overage.6m').removeClass('shown');
+    $('.overage.12m[style*="display: none"]').css('display', '');
+    $('th.overage.12m').addClass('shown');
+  } else if ($('th.overage.shown').first().hasClass('12m')) {
+    $('.overage.12m').css('display', 'none');
+    $('th.overage.12m').removeClass('shown');
+    $('.overage.24m[style*="display: none"]').css('display', '');
+    $('th.overage.24m').addClass('shown');
+  } else if ($('th.overage.shown').first().hasClass('24m')) {
+    $('.overage.24m').css('display', 'none');
+    $('th.overage.24m').removeClass('shown');
+    $('.overage.all[style*="display: none"]').css('display', '');
+    $('th.overage.all').addClass('shown');
+  }
+}
+
+
 function main() {
   $('#month-selector').change(monthSelector);
   $('.budget').click(editBudgetMode);
+  $('.overage').click(cycleOverage);
 }
 
 
