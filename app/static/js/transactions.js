@@ -44,18 +44,9 @@ function clearSearch() {
 
 function searchTransactions() {
     const searchTerm = $('#searchbar').find('input').val().toLowerCase();
-    $('tbody').find('tr').hide();
-    $('tbody').find('tr').each(function (index, row) {
-        // Only want to use specific columns for search terms
-        if ($(row).find('td:nth-child(2)').text().toLowerCase().indexOf(searchTerm) != -1
-            || $(row).find('td:nth-child(3)').text().toLowerCase().indexOf(searchTerm) != -1
-            || $(row).find('td:nth-child(4)').text().toLowerCase().indexOf(searchTerm) != -1
-            || $(row).find('td:nth-child(5)').text().toLowerCase().indexOf(searchTerm) != -1
-            || $(row).find('td:nth-child(6)').find('option:selected').text().toLowerCase().indexOf(searchTerm) != -1
-        ) {
-            $(row).show();
-        };
-    });
+
+    // show only transactions that match searchterms
+    location.href = '/transactions?search=' + encodeURIComponent(searchTerm);
 }
 
 function main() {
