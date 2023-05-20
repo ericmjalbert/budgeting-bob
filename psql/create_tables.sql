@@ -22,6 +22,21 @@ CREATE TABLE IF NOT EXISTS public.transactions (
 ;
 
 
+CREATE TABLE IF NOT EXISTS public.split_transactions (
+    id TEXT,
+    account_type TEXT,
+    account_number TEXT,
+    transaction_date TIMESTAMP WITHOUT TIME ZONE,
+    category TEXT,
+    value FLOAT,
+    description_1 TEXT,
+    description_2 TEXT,
+    created TIMESTAMP WITHOUT TIME ZONE,
+    updated TIMESTAMP WITHOUT TIME ZONE,
+    transaction_id TEXT
+)
+;
+
 
 CREATE TABLE IF NOT EXISTS public.categories_new (
     id          SERIAL PRIMARY KEY,

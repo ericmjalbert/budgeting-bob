@@ -27,7 +27,7 @@ FROM monthly_budget
 
 
 ---------
-CREATE VIEW public.monthly_spend
+CREATE OR REPLACE VIEW public.monthly_spend
 AS
 
 SELECT

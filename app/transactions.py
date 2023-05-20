@@ -13,7 +13,7 @@ def gen_search_clause(term):
     """Creates a series of OR clause to search is term is in the transaction."""
     return f"""
         (account_alias LIKE '%{term}%'
-        OR transaction_date::TEXT LIKE '%{term}%'
+        OR transaction_date_format::TEXT LIKE '%{term}%'
         OR value::TEXT LIKE '%{term}%'
         OR description LIKE '%{term}%'
         OR category LIKE '%{term}%')
@@ -28,46 +28,89 @@ def generate_transaction_sql(selected_month, search_terms):
     match what's been requested.
     """
 
-    base_query = """
-    WITH all_transactions AS (
-        SELECT
-            transactions.id,
-            accounts.owner || ' ' || accounts.type AS account_alias,
-            DATE(transaction_date) AS transaction_date,
-            COALESCE(-1 * value) AS value,
-            COALESCE(description_1, '')
-                || ' '
-                || COALESCE(description_2, '') AS description,
-            category
-        FROM public.transactions
-        INNER JOIN public.accounts
-            ON accounts.type = account_type
-            AND accounts.number = account_number
-    )
+    cte_clauses = f"""
+        WITH all_transactions AS (
+            SELECT
+                transactions.id,
+                accounts.owner || ' ' || accounts.type AS account_alias,
+                DATE(transaction_date) AS transaction_date_format,
+                COALESCE(-1 * value) AS value,
+                COALESCE(description_1, '')
+                    || ' '
+                    || COALESCE(description_2, '') AS description,
+                category
+            FROM public.transactions
+            INNER JOIN public.accounts
+                ON accounts.type = account_type
+                AND accounts.number = account_number
+        ),
 
-    SELECT
-        id,
-        account_alias,
-        transaction_date,
-        value,
-        description,
-        category
-    FROM all_transactions
+        split_transactions AS (
+            SELECT
+                st.id,
+                accounts.owner || ' ' || accounts.type AS account_alias,
+                DATE(transaction_date) AS transaction_date,
+                COALESCE(value) AS value,
+                COALESCE(description_1, '')
+                    || ' '
+                    || COALESCE(description_2, '') AS description,
+                category,
+                st.transaction_id
+            FROM public.split_transactions AS st
+            INNER JOIN public.accounts
+                ON accounts.type = account_type
+                AND accounts.number = account_number
+        ),
+
+        transaction_page_list AS (
+            SELECT
+                at.id,
+                at.account_alias,
+                at.transaction_date_format,
+                ROUND((MAX(at.value) - SUM(COALESCE(st.value, 0)))::NUMERIC, 2) AS value,
+                at.description,
+                at.category,
+                NULL AS transaction_id
+            FROM all_transactions AS at
+            LEFT JOIN split_transactions AS st
+                ON st.transaction_id = at.id
+            GROUP BY 1, 2, 3, 5, 6, 7
+
+            UNION ALL
+
+            SELECT
+                id,
+                account_alias,
+                transaction_date,
+                value,
+                description,
+                category,
+                transaction_id
+            FROM split_transactions
+        )
     """
 
     where_search = [gen_search_clause(term) for term in search_terms]
     where_month = (
-        [f"DATE_TRUNC('month', transaction_date) = '{selected_month}'"]
+        [f"DATE_TRUNC('month', transaction_date_format) = '{selected_month}'"]
         if selected_month
         else []
     )
     where_clauses = " AND ".join(where_search + where_month)
     where_clause = f"WHERE {where_clauses}" if where_clauses else ""
 
-    order_by_clause = "ORDER BY transaction_date DESC, id"
+    order_by_clause = """
+        ORDER BY
+            transaction_date_format DESC,
+            COALESCE(transaction_id, id) DESC,
+            id
+    """
 
     query = f"""
-        {base_query}
+        {cte_clauses}
+
+        SELECT transaction_date_format AS transaction_date, * FROM transaction_page_list
+
         {where_clause}
         {order_by_clause}
     """

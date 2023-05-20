@@ -10,6 +10,10 @@ services:
       - DATABASE_URL=postgresql://postgres:password123@budgeting-bill-psql:5432
       - LOCAL_MODE=true
       - PYTHONUNBUFFERED=1
+    volumes:
+      - ./app/:/app/app/
+
+    command: gunicorn -b 0.0.0.0:5000 --reload app:my_app
 
   db:
     container_name: budgeting-bill-psql

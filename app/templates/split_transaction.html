@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Split Transaction{% endblock %}
+
+{% block header %}
+<script type='text/javascript' src='static/js/split_transaction.js'></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="card mb3" style="margin-top: 20pt">
+  <div class="card-body">
+    <h5 class="card-title">Split Transaction</h5>
+    <table class="table mb-3" >
+      <thead class="thead-light">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Account Alias</th>
+          <th scope="col">Transaction Date</th>
+          <th scope="col">Value</th>
+          <th scope="col">Description</th>
+          <th scope="col">Category</th>
+          <th scope="col">Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td></td>
+          <td class="id" style="display:none;">{{ row["id"] }}</td>
+          <td>{{ row["account_alias"]|capitalize }}</td>
+          <td>{{ row["transaction_date"] }}</td>
+          <td>{{ row["value"] }}</td>
+          <td>{{ row["description"] }}</td>
+          <td class="category">
+            <select class="custom-select category-save" id="category">
+              <option disabled selected value> None </option>
+              {% for val in categories %}
+              <option value="{{ val["category"] }}"
+                {%- if val["category"] == row["category"] %} selected {% endif -%}
+                > {{ val["category"]|capitalize }} </option>
+              {% endfor %}
+            </select>
+          </td>
+          <td></td>
+        </tr>
+
+        
+        <tr>
+          <td>
+            <a href="{{ url_for('split_transaction.split_transaction') }}">
+              <button type="button" class="btn btn-outline-secondary btn-sm split">
+                <i class="fa-solid fa-scissors"></i>
+              </button>
+            </a>
+          </td>
+          <td class="id" style="display:none;">{{ row["id"] }}</td>
+          <td>{{ row["account_alias"]|capitalize }}</td>
+          <td>{{ row["transaction_date"] }}</td>
+          <td class="value">
+            <input type="text" class="form-control" size="1" value=""/>
+          </td>
+          <td class="description"> 
+            <input 
+              type="text"
+              class="form-control"
+              value="{{ row["description"] }}"
+              pattern="^[a-zA-Z0-9\s]+$"
+              title="Please enter only letters, numbers, and spaces."
+            />
+          </td>
+          <td class="category">
+            <select class="custom-select category-save" id="category">
+              <option disabled selected value> None </option>
+              {% for val in categories %}
+              <option value="{{ val["category"] }}"
+                {%- if val["category"] == row["category"] %} selected {% endif -%}
+                > {{ val["category"]|capitalize }} </option>
+              {% endfor %}
+            </select>
+          </td>
+          <td>
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary save" type="button">Save</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+  <div class="card-body">
+    <h5 class="card-title">Other Split Transactions</h5>
+    <table class="table mb-3">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Account Alias</th>
+          <th scope="col">Transaction Date</th>
+          <th scope="col">Value</th>
+          <th scope="col">Description</th>
+          <th scope="col">Category</th>
+          <th scope="col">Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+
+      {% for row in read_only_rows %}
+      <tr>
+        <td></td>
+        <td style="display:none;">{{ row["id"] }}</td>
+        <td>{{ row["account_alias"]|capitalize }}</td>
+        <td>{{ row["transaction_date"] }}</td>
+        <td>{{ row["value"] }}</td>
+        <td>{{ row["description"] }}</td>
+        <td class="category">
+          <select class="custom-select category-save" id="category">
+            <option disabled selected value> None </option>
+            {% for val in categories %}
+            <option value="{{ val["category"] }}"
+              {%- if val["category"] == row["category"] %} selected {% endif -%}
+              > {{ val["category"]|capitalize }} </option>
+            {% endfor %}
+          </select>
+        </td>
+        <td></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

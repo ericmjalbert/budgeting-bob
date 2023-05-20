@@ -1,11 +1,10 @@
 function monthSelector() {
-  // Get the month value that's is selected
-  var month = $(this).val()
+    // Get the month value that's is selected
+    var month = $(this).val()
 
-  // show budgets of selected month
-  location.href = '/transactions?selected_month=' + month
+    // show budgets of selected month
+    location.href = '/transactions?selected_month=' + month
 }
-
 
 function searchBarKeyPress(e) {
     //See notes about 'which' and 'key'
@@ -38,8 +37,10 @@ function saveCategoryButton() {
 }
 
 function clearSearch() {
+    // remove search bar and use month selector instead
     $('#searchbar').find('input').val('');
-    $('tbody').find('tr').show();
+
+    $('#month-selector').each(monthSelector)
 }
 
 function searchTransactions() {
@@ -49,12 +50,27 @@ function searchTransactions() {
     location.href = '/transactions?search=' + encodeURIComponent(searchTerm);
 }
 
+function deleteSplitTransaction() {
+    var thisRow = $(this).closest('tr');
+    var id = thisRow.find('.id-value').text();
+
+    $.getJSON(
+        url='/delete_split_transaction',
+        data={"id": id}
+    );
+
+    thisRow.css("text-decoration", "line-through");
+    thisRow.find('.customSelect').addClass("disabled");
+    thisRow.find('.save').prop("disabled", true);
+}
+
 function main() {
-  $('#month-selector').change(monthSelector);
-  $('.category-save').on('change', highlightSaveButton);
-  $('.save').click(saveCategoryButton);
-  $('#search').click(searchTransactions);
-  $('#clear-search').click(clearSearch);
+    $('#month-selector').change(monthSelector);
+    $('.category-save').on('change', highlightSaveButton);
+    $('.save').click(saveCategoryButton);
+    $('#search').click(searchTransactions);
+    $('#clear-search').click(clearSearch);
+    $('.delete').click(deleteSplitTransaction);
 }
 
 $(document).ready(function() {

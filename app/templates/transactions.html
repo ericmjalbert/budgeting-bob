@@ -43,6 +43,7 @@
 <table class="table mb-3" >
   <thead class="thead-light">
     <tr>
+      <th scope="col"></th>
       <th scope="col">Account Alias</th>
       <th scope="col">Transaction Date</th>
       <th scope="col">Value</th>
@@ -54,6 +55,19 @@
   <tbody>
     {% for row in rows %}
     <tr>
+      <td>
+        {% if row["transaction_id"] %}
+        <button type="button" class="delete btn btn-outline-secondary btn-sm split">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+        {% else %}
+        <a href="{{ url_for('split_transaction.split_transaction', id=row["id"]) }}">
+          <button type="button" class="btn btn-outline-secondary btn-sm split">
+            <i class="fa-solid fa-scissors"></i>
+          </button>
+        </a>
+        {% endif %}
+      </td>
       <td class="id-value" style="display:none;">{{ row["id"] }}</td>
       <td>{{ row["account_alias"]|capitalize }}</td>
       <td>{{ row["transaction_date"] }}</td>
