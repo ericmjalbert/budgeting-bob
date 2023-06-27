@@ -16,7 +16,7 @@ def gen_search_clause(term):
         OR transaction_date_format::TEXT LIKE '%{term}%'
         OR value::TEXT LIKE '%{term}%'
         OR description LIKE '%{term}%'
-        OR category LIKE '%{term}%')
+        OR COALESCE(category, 'none') LIKE '%{term}%')
         """
 
 
