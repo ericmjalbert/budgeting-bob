@@ -1,4 +1,6 @@
-\copy public.transactions FROM '/opt/dev_data.csv' WITH (FORMAT csv, HEADER);
+\copy public.transactions FROM '/opt/dev_data_transactions.csv' WITH (FORMAT csv, HEADER);
+\copy public.split_transactions FROM '/opt/dev_data_split_transactions.csv' WITH (FORMAT csv, HEADER);
+
 
 -- Fill the accounts and budget with fake data
 INSERT INTO public.accounts VALUES

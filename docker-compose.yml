@@ -35,7 +35,8 @@ services:
 
       # copy the sql script to fill tables with dummy data
       - ./psql/setup_dev_dummy_data.sql:/docker-entrypoint-initdb.d/3_setup_dev_dummy_data.sql
-      - ./psql/dev_data.csv:/opt/dev_data.csv
+      - ./psql/dev_data_split_transactions.csv:/opt/dev_data_split_transactions.csv
+      - ./psql/dev_data_transactions.csv:/opt/dev_data_transactions.csv
 
 volumes:
   db:

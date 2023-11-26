@@ -28,7 +28,9 @@ def account_totals():
 
     with Database() as db:
         sql = """
-            SELECT MAX(updated) FROM transactions
+            SELECT
+                COALESCE(MAX(transaction_date), '1970-01-01 00:00:00') AS max
+            FROM transactions
         """
         db.execute(sql)
         result = db.fetchone()

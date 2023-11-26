@@ -43,6 +43,11 @@ def calc_cumulative_sum(data, selected_month, num_months=None):
             )
         ]
 
+    # If there's no data in the selected months, just return 0's
+    if len(filtered_data) == 0:
+        empty_result = {row["category"]: 0 for row in data}
+        return empty_result
+
     # Sort the data by category and month
     sorted_data = sorted(filtered_data, key=lambda x: (x['category'], x['month']))
 
@@ -54,8 +59,6 @@ def calc_cumulative_sum(data, selected_month, num_months=None):
     for category, group in grouped_data:
         cumulative_sum = list(accumulate(item['value'] for item in group))
         result[category] = cumulative_sum[-1]
-        if category == 'cats':
-            print(result[category], cumulative_sum)
 
     return result
 
